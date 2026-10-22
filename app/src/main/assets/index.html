@@ -81,7 +81,7 @@ $('help').onclick=()=>say('Dicte ton message, choisis ton ami et l’application
     '<button class="utility-tile" data-tool="search"><span>⌕</span>Rechercher</button>'+
     '<button class="utility-tile" data-tool="calendar"><span>▦</span>Agenda</button>'+
     '<button class="utility-tile" data-tool="youtube"><span>▶</span>YouTube</button>'+
-    '<button class="utility-tile" data-tool="spotify"><span>♫</span>Musique</button></div>'+
+    '<button class="utility-tile" data-tool="spotify"><span>♫</span>Musique</button>'+'<button class="utility-tile" data-tool="github"><span>⌘</span>Mon dépôt</button></div>'+
     '<p class="utility-caption">Calculs et notes fonctionnent directement ici. Météo, cartes, agenda et médias s’ouvrent dans leurs applications ou dans le navigateur.</p>';
   document.querySelector(".card.assistant").insertAdjacentElement("afterend",section);
   document.body.insertAdjacentHTML("beforeend",
@@ -95,6 +95,7 @@ $('help').onclick=()=>say('Dicte ton message, choisis ton ami et l’application
   function notes(){try{return JSON.parse(localStorage.getItem(noteKey)||"[]")}catch{return []}}
   function renderNotes(){list.replaceChildren();notes().forEach((value,index)=>{const row=document.createElement("div");row.className="note-item";const text=document.createElement("span");text.textContent=value;const del=document.createElement("button");del.className="note-delete";del.textContent="×";del.setAttribute("aria-label","Supprimer la note");del.onclick=()=>{const next=notes();next.splice(index,1);localStorage.setItem(noteKey,JSON.stringify(next));renderNotes()};row.append(text,del);list.append(row)})}
   function openUtility(name,prefill=""){
+    if(name==="github"){location.href="https://github.com/dujardinsami389-beep/ai-core-jarvis";return}
     if(name==="youtube"||name==="spotify"){
       const query=prompt(name==="youtube"?"Que veux-tu regarder ?":"Quelle musique veux-tu écouter ?");
       const base=name==="youtube"?"https://www.youtube.com/results?search_query=":"https://open.spotify.com/search/";
@@ -143,11 +144,13 @@ $('help').onclick=()=>say('Dicte ton message, choisis ton ami et l’application
     if(/cherche|recherche|google/.test(s)){openUtility("search",text.replace(/.*(?:cherche|recherche|google)\\s*/i,""));return}
     if(/youtube/.test(s)){openUtility("youtube");return}
     if(/spotify|musique/.test(s)){openUtility("spotify");return}
+    if(/github|depot|code/.test(s)){openUtility("github");return}
     const m=text.match(/^(?:jarvis[, ]*)?(?:envoie|écris|ecris|rédige|redige)?\\s*(?:un\\s+)?message\\s+(?:à|a)\\s+([^:,.]+)\\s*[:,]\\s*(.+)$/i);
     if(m){$("person").textContent=m[1].trim();$("message").value=m[2].trim();$("reply").textContent="Brouillon prêt pour "+m[1].trim()+". Choisis son contact et vérifie le texte.";return}
     $("message").value=text;$("reply").textContent="J’ai préparé ton brouillon. Relis-le avant de continuer."
   }
   function smartListen(){
+    if(window.AndroidSpeech){window.__aiCoreSpeechResult=(s)=>routeVoice(s);window.__aiCoreSpeechEnd=()=>{$("core").classList.remove("active");$("status").textContent="PRÊT À T’ÉCOUTER"};window.__aiCoreSpeechError=(code)=>{$("core").classList.remove("active");$("status").textContent="PRÊT À T’ÉCOUTER";toast(code==="not-allowed"?"Autorise le micro pour dicter.":"La dictée Android est indisponible.")};$("core").classList.add("active");$("status").textContent="JE T’ÉCOUTE…";window.AndroidSpeech.start();return}
     const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){toast("La dictée n’est pas disponible ici. Écris ta demande.");return}
     const recognizer=new SR();recognizer.lang="fr-FR";recognizer.continuous=false;recognizer.interimResults=false;
     recognizer.onstart=()=>{$("core").classList.add("active");$("status").textContent="JE T’ÉCOUTE…"};
