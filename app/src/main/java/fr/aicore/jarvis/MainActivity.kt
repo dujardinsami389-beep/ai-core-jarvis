@@ -4,22 +4,34 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.database.Cursor
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.provider.OpenableColumns
 import android.speech.RecognizerIntent
 import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import com.google.ai.edge.litertlm.Conversation
+import com.google.ai.edge.litertlm.Engine
+import com.google.ai.edge.litertlm.EngineConfig
 import org.json.JSONObject
+import java.io.File
 import java.util.Locale
+import java.util.concurrent.Executors
 
 class MainActivity : Activity() {
     private lateinit var web: WebView
     private val permissionRequest = 42
     private val speechRequest = 43
+    private val modelRequest = 44
+    private val worker = Executors.newSingleThreadExecutor()
+    private var engine: Engine? = null
+    private var conversation: Conversation? = null
+    private val modelFile by lazy { File(filesDir, "ai-core-gemma3-1b-int4.litertlm") }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +45,7 @@ class MainActivity : Activity() {
         web.settings.allowFileAccess = true
         web.settings.allowContentAccess = false
         web.addJavascriptInterface(SpeechBridge(), "AndroidSpeech")
+        web.addJavascriptInterface(AICoreBridge(), "AndroidAI")
         web.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
                 val uri = request.url
@@ -54,15 +67,66 @@ class MainActivity : Activity() {
         }
     }
 
+    private fun sendToPage(script: String) {
+        if (::web.isInitialized) runOnUiThread { web.evaluateJavascript(script, null) }
+    }
+
+    private fun modelStatus(message: String) =
+        sendToPage("window.__aiCoreModelStatus && window.__aiCoreModelStatus(${JSONObject.quote(message)});")
+
+    private inner class AICoreBridge {
+        @JavascriptInterface fun hasModel(): Boolean = modelFile.exists() && modelFile.length() > 400L * 1024 * 1024
+
+        @JavascriptInterface fun openModelPage() {
+            runOnUiThread {
+                openExternal(Uri.parse("https://huggingface.co/litert-community/Gemma3-1B-IT"))
+            }
+        }
+
+        @JavascriptInterface fun chooseModel() {
+            runOnUiThread {
+                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = "*/*"
+                    putExtra(Intent.EXTRA_TITLE, "Choisir gemma3-1b-it-int4.litertlm")
+                }
+                startActivityForResult(intent, modelRequest)
+            }
+        }
+
+        @JavascriptInterface fun ask(prompt: String) {
+            val cleaned = prompt.trim().take(5000)
+            if (cleaned.isEmpty()) return
+            worker.execute {
+                try {
+                    if (conversation == null) initializeModel()
+                    modelStatus("L’IA réfléchit…")
+                    val answer = conversation!!.sendMessage(cleaned).text
+                    sendToPage("window.__aiCoreAnswer && window.__aiCoreAnswer(${JSONObject.quote(answer)});")
+                    modelStatus("IA hors ligne prête")
+                } catch (e: Exception) {
+                    modelStatus("Erreur : ${e.message ?: "impossible de lancer le modèle"}")
+                    sendToPage("window.__aiCoreAnswer && window.__aiCoreAnswer(${JSONObject.quote("Je n’ai pas pu lancer le modèle. Vérifie que tu as choisi le fichier Gemma LiteRT prévu pour Android.")});")
+                }
+            }
+        }
+    }
+
+    private fun initializeModel() {
+        if (!modelFile.exists()) throw IllegalStateException("Télécharge puis importe le modèle Gemma")
+        modelStatus("Chargement du modèle sur ce téléphone…")
+        val newEngine = Engine(EngineConfig(modelPath = modelFile.absolutePath))
+        newEngine.initialize()
+        engine = newEngine
+        conversation = newEngine.createConversation()
+    }
+
     private inner class SpeechBridge {
-        @JavascriptInterface
-        fun start() {
+        @JavascriptInterface fun start() {
             runOnUiThread {
                 if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
                     requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), permissionRequest)
-                } else {
-                    startSpeechRecognition()
-                }
+                } else startSpeechRecognition()
             }
         }
     }
@@ -80,11 +144,65 @@ class MainActivity : Activity() {
         }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
+    private fun displayName(uri: Uri): String? {
+        var cursor: Cursor? = null
+        return try {
+            cursor = contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)
+            if (cursor?.moveToFirst() == true) cursor.getString(0) else null
+        } finally {
+            cursor?.close()
+        }
+    }
+
+    private fun importModel(uri: Uri) {
+        worker.execute {
+            val name = displayName(uri).orEmpty()
+            if (!name.endsWith(".litertlm", ignoreCase = true) || !name.contains("gemma3-1b-it-int4", ignoreCase = true)) {
+                modelStatus("Choisis le fichier gemma3-1b-it-int4.litertlm téléchargé depuis la page officielle.")
+                return@execute
+            }
+            val temp = File(filesDir, "ai-core-model.tmp")
+            try {
+                val free = filesDir.usableSpace
+                if (free < 700L * 1024 * 1024) {
+                    modelStatus("Libère au moins 700 Mo sur le téléphone puis réessaie.")
+                    return@execute
+                }
+                modelStatus("Installation du modèle : 0 %")
+                contentResolver.openInputStream(uri).use { input ->
+                    requireNotNull(input) { "Le fichier n’est pas accessible." }
+                    temp.outputStream().buffered().use { output ->
+                        val buffer = ByteArray(1024 * 1024)
+                        var copied = 0L
+                        var lastPercent = -1
+                        while (true) {
+                            val count = input.read(buffer)
+                            if (count < 0) break
+                            output.write(buffer, 0, count)
+                            copied += count
+                            val percent = (copied * 100 / (529L * 1024 * 1024)).toInt().coerceAtMost(99)
+                            if (percent >= lastPercent + 5) {
+                                lastPercent = percent
+                                modelStatus("Installation du modèle : $percent %")
+                            }
+                        }
+                    }
+                }
+                if (temp.length() < 400L * 1024 * 1024) throw IllegalArgumentException("Le fichier est trop petit pour être le modèle complet.")
+                if (modelFile.exists()) modelFile.delete()
+                if (!temp.renameTo(modelFile)) temp.copyTo(modelFile, overwrite = true)
+                temp.delete()
+                modelStatus("Modèle installé. Chargement…")
+                initializeModel()
+                modelStatus("IA hors ligne prête")
+            } catch (e: Exception) {
+                temp.delete()
+                modelStatus("Installation impossible : ${e.message ?: "réessaie avec le fichier complet"}")
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == permissionRequest) {
             if (grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) startSpeechRecognition()
@@ -92,23 +210,28 @@ class MainActivity : Activity() {
         }
     }
 
-    @Deprecated("Android speech recognizer result")
+    @Deprecated("Android activity result API")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == modelRequest && resultCode == RESULT_OK) data?.data?.let(::importModel)
         if (requestCode != speechRequest) return
         if (resultCode == RESULT_OK) {
             val phrase = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.firstOrNull().orEmpty()
-            web.evaluateJavascript("window.__aiCoreSpeechResult(${JSONObject.quote(phrase)});", null)
-        } else {
-            web.evaluateJavascript("window.__aiCoreSpeechEnd();", null)
-        }
+            sendToPage("window.__aiCoreSpeechResult && window.__aiCoreSpeechResult(${JSONObject.quote(phrase)});")
+        } else sendToPage("window.__aiCoreSpeechEnd && window.__aiCoreSpeechEnd();")
     }
 
-    private fun sendSpeechError(code: String) {
-        web.evaluateJavascript("window.__aiCoreSpeechError(${JSONObject.quote(code)});", null)
-    }
+    private fun sendSpeechError(code: String) =
+        sendToPage("window.__aiCoreSpeechError && window.__aiCoreSpeechError(${JSONObject.quote(code)});")
 
     override fun onBackPressed() {
         if (::web.isInitialized && web.canGoBack()) web.goBack() else super.onBackPressed()
+    }
+
+    override fun onDestroy() {
+        try { conversation?.close() } catch (_: Exception) {}
+        try { engine?.close() } catch (_: Exception) {}
+        worker.shutdownNow()
+        super.onDestroy()
     }
 }
