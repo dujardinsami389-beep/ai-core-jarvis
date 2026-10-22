@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#07111f">
+<title>AI CORE — JARVIS Android</title>
+<style>
+:root{color-scheme:dark;--bg:#07111f;--ink:#eff8ff;--muted:#90a6bb;--cyan:#7bdcff;--mint:#9affdd;--line:#a9dbff20}*{box-sizing:border-box}body{margin:0;min-height:100dvh;padding:env(safe-area-inset-top,0px) 0 calc(18px + env(safe-area-inset-bottom,0px));font-family:Inter,Roboto,"Segoe UI",system-ui,sans-serif;color:var(--ink);background:radial-gradient(ellipse at 50% 9%,#163e5c,#0b1a2b 38%,var(--bg) 76%)}button,input,textarea{font:inherit}.shell{max-width:490px;margin:auto;padding:19px 20px}.top{display:flex;justify-content:space-between;align-items:center}.brand{font-weight:900;font-size:17px;letter-spacing:.27em}.sub{margin-top:4px;color:var(--muted);font-size:9px;letter-spacing:.2em}.online{padding:8px 11px;border-radius:24px;background:#102c34;border:1px solid #9affdd31;color:var(--mint);font-size:9px;font-weight:800;letter-spacing:.12em}.online i{display:inline-block;width:6px;height:6px;margin-right:6px;border-radius:50%;background:var(--mint);box-shadow:0 0 10px var(--mint)}.hero{text-align:center;padding-top:27px}.eyebrow{color:var(--muted);font-size:9px;font-weight:800;letter-spacing:.25em}.hero h1{margin:9px 0 6px;font-size:27px;line-height:1.08;letter-spacing:-.04em}.hero p{margin:0;color:var(--muted);font-size:12px}.orb{position:relative;width:210px;height:210px;margin:12px auto 2px;display:grid;place-items:center;cursor:pointer}.ring{position:absolute;inset:5px;border-radius:50%;border:1px solid #83dcff39;animation:spin 22s linear infinite}.ring:before{content:"";position:absolute;left:18%;top:5%;width:5px;height:5px;border-radius:50%;background:var(--mint);box-shadow:0 0 15px var(--mint)}.ring.r2{inset:22px;border-style:dashed;animation-direction:reverse;animation-duration:32s;border-color:#c9f2ff35}.ring.r3{inset:40px;animation-duration:14s;border-color:#aaffeb25}.core{width:116px;height:116px;border-radius:50%;border:1px solid #d9ffff99;background:radial-gradient(circle at 42% 37%,#f3ffff 0 2%,#aaffed 4%,#54deff 11%,#167cad 32%,#0a2942 64%,#06121e 79%);box-shadow:0 0 25px #53d4ffc4,0 0 75px #218cff70,inset 0 0 25px #c5ffff9c;animation:pulse 3s ease-in-out infinite}.core:after{content:"";display:block;width:37px;height:37px;margin:38px auto;border:1px solid #e8ffffa6;border-radius:50%;box-shadow:0 0 21px #c7ffffaa,inset 0 0 14px #d9ffff}.core.active{box-shadow:0 0 42px #92fff3,0 0 108px #299dffbb,inset 0 0 28px white}.orb-label{position:absolute;bottom:5px;left:0;right:0;color:#c1d5e5;font-size:9px;letter-spacing:.16em}@keyframes spin{to{transform:rotate(360deg)}}@keyframes pulse{50%{transform:scale(1.05);filter:brightness(1.18)}}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important}}
+.status{min-height:16px;color:var(--mint);font-size:9px;letter-spacing:.14em;font-weight:800}.card{margin-top:14px;padding:16px;border-radius:22px;border:1px solid var(--line);background:linear-gradient(145deg,#14263aed,#0c1726ef);box-shadow:0 16px 42px #0003;backdrop-filter:blur(14px)}.assistant{display:flex;gap:11px;align-items:flex-start}.avatar{display:grid;place-items:center;flex:0 0 31px;height:31px;border-radius:50%;background:linear-gradient(135deg,var(--cyan),var(--mint));color:#071521;font-weight:950}.assistant b{display:block;margin:2px 0 5px;color:var(--cyan);font-size:9px;letter-spacing:.18em}.assistant p{margin:0;color:#d9e8f2;font-size:12px;line-height:1.5}.row{display:flex;justify-content:space-between;align-items:center;gap:12px}.label{color:var(--muted);font-size:9px;font-weight:850;letter-spacing:.16em}.person{margin-top:5px;font-size:14px;font-weight:700}.ghost{border:1px solid #77d9ff45;border-radius:12px;background:#132b3e;color:#bfeaff;padding:10px 12px;font-size:10px;font-weight:800}.field{width:100%;border:1px solid #9dd8ff26;border-radius:13px;background:#081320;color:var(--ink);outline:0;padding:12px;font-size:12px}.field:focus{border-color:#7bdcff9a;box-shadow:0 0 0 3px #7bdcff10}.field::placeholder{color:#778da2}.channels{display:flex;gap:7px;overflow:auto;margin-top:9px;padding-bottom:2px}.chip{flex:none;border:1px solid #ffffff17;border-radius:24px;background:#0a1622;color:#a2b6c8;padding:9px 12px;font-size:10px;font-weight:750}.chip.sel{border-color:#9affdd69;background:#173840;color:var(--mint)}.compose{margin-top:15px}.compose textarea{min-height:76px;resize:vertical;line-height:1.5}.quicktexts{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.suggest{border:1px solid #ffffff14;border-radius:20px;background:#112131;color:#c6d7e4;padding:7px 10px;font-size:9px}.send{width:100%;height:49px;margin-top:13px;border:0;border-radius:15px;background:linear-gradient(100deg,#75d9ff,#9bffe0);color:#071521;font-size:13px;font-weight:900;box-shadow:0 9px 25px #42bdff35}.fine{text-align:center;margin:8px 3px 0;color:#7890a7;font-size:9px;line-height:1.45}.quick{display:flex;gap:8px;margin:13px 0}.quick button{flex:1;border:1px solid #ffffff14;border-radius:14px;background:#101d2b;color:#d0deea;padding:11px 7px;font-size:10px}.tiny{text-align:center;color:#627a91;font-size:9px}.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,14px);opacity:0;pointer-events:none;max-width:90vw;padding:11px 14px;border-radius:12px;background:#ecf9ff;color:#081523;text-align:center;font-size:11px;font-weight:750;box-shadow:0 8px 30px #0007;transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body><main class="shell">
+<header class="top"><div><div class="brand">AI CORE</div><div class="sub">J A R V I S&nbsp; / &nbsp;M O B I L E</div></div><div class="online"><i></i>EN LIGNE</div></header>
+<section class="hero"><div class="eyebrow">TON ASSISTANT PERSONNEL</div><h1>À tes côtés,<br>sur ton Android.</h1><p>Parle. Prépare. Choisis ton application.</p>
+<div class="orb" id="listen" role="button" tabindex="0" aria-label="Dicter un message"><div class="ring"></div><div class="ring r2"></div><div class="ring r3"></div><div class="core" id="core"></div><div class="orb-label">TOUCHE POUR PARLER</div></div><div class="status" id="status">PRÊT À T’ÉCOUTER</div></section>
+<section class="card assistant"><div class="avatar">J</div><div><b>JARVIS</b><p id="reply">Je prépare ton message puis je l’ouvre dans WhatsApp, SMS, Telegram ou l’appli de ton choix.</p></div></section>
+<section class="card">
+<div class="row"><div><div class="label">DESTINATAIRE</div><div class="person" id="person">Choisis un ami</div></div><button class="ghost" id="pick" type="button">Contacts +</button></div>
+<input class="field" id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="Ou saisis son numéro (+33…)" aria-label="Numéro du destinataire" style="margin-top:10px">
+<div class="label" style="margin-top:16px">OUVRIR DANS</div><div class="channels" id="channels"><button class="chip sel" data-app="WhatsApp">WhatsApp</button><button class="chip" data-app="SMS">SMS</button><button class="chip" data-app="Telegram">Telegram</button><button class="chip" data-app="Signal">Signal</button><button class="chip" data-app="Autre appli">Autre appli</button></div>
+<div class="compose"><div class="label" style="margin-bottom:8px">TON MESSAGE</div><textarea class="field" id="message" placeholder="Dicte ou écris ton message…" aria-label="Message à envoyer"></textarea>
+<div class="quicktexts"><button class="suggest" data-text="Je suis en retard, j’arrive bientôt !">J’arrive bientôt</button><button class="suggest" data-text="Tu es disponible pour qu’on s’appelle ?">On s’appelle ?</button><button class="suggest" data-text="Merci pour tout, ça m’a fait très plaisir 😊">Dire merci</button></div>
+<button class="send" id="send" type="button">Continuer avec WhatsApp&nbsp; ↗</button><p class="fine">Le message s’ouvre dans l’appli choisie. Tu le relis et appuies toi-même sur Envoyer.</p></div>
+</section>
+<nav class="quick"><button id="time" type="button">◷ &nbsp;Heure</button><button id="date" type="button">▦ &nbsp;Date</button><button id="help" type="button">✦ &nbsp;Aide</button></nav><p class="tiny">Le micro ne s’active qu’après ton appui sur le cœur.</p>
+</main><div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+(()=>{const $=id=>document.getElementById(id),msg=$('message'),phone=$('phone'),core=$('core');let app='WhatsApp';
+function toast(t){const e=$('toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2600)}
+function say(t){$('reply').textContent=t}
+function choose(a){app=a;document.querySelectorAll('.chip').forEach(b=>b.classList.toggle('sel',b.dataset.app===a));$('send').textContent='Continuer avec '+a+'  ↗'}
+document.querySelectorAll('.chip').forEach(b=>b.onclick=()=>choose(b.dataset.app));
+document.querySelectorAll('.suggest').forEach(b=>b.onclick=()=>{msg.value=b.dataset.text;msg.focus()});
+function share(){const text=msg.value.trim(),raw=phone.value.trim(),digits=raw.replace(/\D/g,'');if(!text){toast('Écris ou dicte d’abord ton message.');msg.focus();return}
+let url;if(app==='WhatsApp')url=digits?'https://wa.me/'+digits+'?text='+encodeURIComponent(text):'https://wa.me/?text='+encodeURIComponent(text);
+else if(app==='SMS')url='sms:'+encodeURIComponent(raw)+'?body='+encodeURIComponent(text);
+else if(app==='Telegram')url='https://t.me/share/url?url=&text='+encodeURIComponent(text);
+else if(navigator.share){navigator.share({title:'Message AI CORE',text}).then(()=>say('Feuille de partage Android ouverte.')).catch(()=>{});return}
+else if(navigator.clipboard){navigator.clipboard.writeText(text).then(()=>toast('Texte copié. Colle-le dans '+app+'.')).catch(()=>toast('Ouvre '+app+' et colle ton message.'));return}
+say('Brouillon prêt. Vérifie le destinataire et confirme dans '+app+'.');location.href=url}
+$('send').onclick=share;
+async function pick(){if(!(navigator.contacts&&navigator.contacts.select)){toast('Saisis le numéro ici : ce navigateur ne donne pas accès au carnet.');phone.focus();return}try{const p=(await navigator.contacts.select(['name','tel']))[0];if(!p)return;$('person').textContent=p.name?.[0]||'Contact';phone.value=p.tel?.[0]||'';say($('person').textContent+' est sélectionné. Vérifie ton message avant de continuer.')}catch(e){if(e.name!=='AbortError')toast('Tu peux saisir le numéro manuellement.')}}
+$('pick').onclick=pick;
+function dictation(){if(window.AndroidSpeech){window.__aiCoreSpeechResult=(s)=>{core.classList.remove("active");$("status").textContent="PRÊT À T’ÉCOUTER";const m=s.match(/^(?:jarvis[, ]*)?(?:envoie|écris|ecris|rédige|redige)?\s*(?:un\s+)?message\s+(?:à|a)\s+([^:,.]+)\s*[:,]\s*(.+)$/i);if(m){$("person").textContent=m[1].trim();msg.value=m[2].trim();say("Brouillon prêt pour "+m[1].trim()+". Choisis son numéro ou son contact.")}else{routeVoice(s)}msg.focus()};window.__aiCoreSpeechEnd=()=>{core.classList.remove("active");$("status").textContent="PRÊT À T’ÉCOUTER"};window.__aiCoreSpeechError=(code)=>{core.classList.remove("active");$("status").textContent="PRÊT À T’ÉCOUTER";toast(code==="not-allowed"?"Autorise le micro pour dicter.":"La dictée Android est indisponible.")};core.classList.add("active");$("status").textContent="JE T’ÉCOUTE…";window.AndroidSpeech.start();return}const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){toast('Dictée indisponible dans ce navigateur. Écris ton texte.');return}const r=new SR();r.lang='fr-FR';r.continuous=false;r.interimResults=false;r.onstart=()=>{core.classList.add('active');$('status').textContent='JE T’ÉCOUTE…'};r.onend=()=>{core.classList.remove('active');$('status').textContent='PRÊT À T’ÉCOUTER'};r.onerror=e=>toast(e.error==='not-allowed'?'Autorise le micro pour dicter.':'Je n’ai pas pu entendre. Réessaie.');r.onresult=e=>{const s=e.results[0][0].transcript.trim(),m=s.match(/^(?:jarvis[, ]*)?(?:envoie|écris|ecris|rédige|redige)?\s*(?:un\s+)?message\s+(?:à|a)\s+([^:,.]+)\s*[:,]\s*(.+)$/i);if(m){$('person').textContent=m[1].trim();msg.value=m[2].trim();say('Brouillon prêt pour '+m[1].trim()+'. Choisis son numéro ou son contact.')}else{msg.value=s;say('J’ai préparé ton brouillon. Relis-le avant de continuer.')}msg.focus()};try{r.start()}catch{toast('La dictée est déjà en cours.')}}
+$('listen').onclick=dictation;$('listen').onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();dictation()}};
+$('time').onclick=()=>say('Il est '+new Intl.DateTimeFormat('fr-FR',{hour:'2-digit',minute:'2-digit'}).format(new Date())+'.');
+$('date').onclick=()=>say('Nous sommes '+new Intl.DateTimeFormat('fr-FR',{weekday:'long',day:'numeric',month:'long'}).format(new Date())+'.');
+$('help').onclick=()=>say('Dicte ton message, choisis ton ami et l’application. Le dernier appui sur Envoyer reste entre tes mains.');
+})();
+</script>
+
+<style>
+.utility-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+.utility-tile{min-height:69px;border:1px solid #ffffff13;border-radius:15px;background:linear-gradient(145deg,#15283a,#0b1724);color:#e8f5ff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:9px;font-weight:700;cursor:pointer}
+.utility-tile span{font-size:19px;line-height:1;color:#9affdd}
+.utility-tile:active{transform:scale(.97)}
+.utility-caption{color:#7890a7;font-size:9px;line-height:1.45;margin:10px 2px 0}
+#utilityDialog{width:min(92vw,420px);max-height:84dvh;overflow:auto;border:1px solid #9dd8ff38;border-radius:22px;padding:18px;background:linear-gradient(145deg,#14263a,#091522);color:#eff8ff;box-shadow:0 25px 90px #0009}
+#utilityDialog::backdrop{background:#020711c9;backdrop-filter:blur(6px)}
+.util-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.util-title{font-size:16px;font-weight:800}
+.util-close{border:1px solid #ffffff1a;background:#102236;color:#dceeff;border-radius:12px;width:36px;height:36px;font-size:18px}
+.util-help{color:#91a6bb;font-size:11px;line-height:1.5;margin:0 0 13px}
+.util-input,.util-note{width:100%;border:1px solid #8bcfff35;border-radius:13px;background:#071320;color:#eff8ff;padding:12px;font:inherit;font-size:13px;outline:0}
+.util-note{min-height:95px;resize:vertical}
+.util-run{width:100%;margin-top:11px;padding:13px;border:0;border-radius:13px;background:linear-gradient(100deg,#75d9ff,#9bffe0);color:#071521;font-weight:900}
+.note-list{display:grid;gap:7px;margin-top:12px}
+.note-item{display:flex;justify-content:space-between;gap:8px;padding:10px;border:1px solid #ffffff12;border-radius:12px;background:#0a1724;color:#dceaf4;font-size:11px;line-height:1.4}
+.note-delete{flex:none;border:0;background:transparent;color:#ff9aa7;font-size:15px}
+@media(max-width:360px){.utility-grid{grid-template-columns:repeat(3,1fr)}}
+</style>
+<script>
+(()=> {
+  const $=id=>document.getElementById(id);
+  const section=document.createElement("section");
+  section.className="card";
+  section.innerHTML='<div class="label">BIEN PLUS QUE LES MESSAGES</div><div class="utility-grid">'+
+    '<button class="utility-tile" data-tool="calc"><span>＋</span>Calculer</button>'+
+    '<button class="utility-tile" data-tool="notes"><span>✎</span>Mes notes</button>'+
+    '<button class="utility-tile" data-tool="weather"><span>☼</span>Météo</button>'+
+    '<button class="utility-tile" data-tool="maps"><span>⌖</span>Cartes</button>'+
+    '<button class="utility-tile" data-tool="search"><span>⌕</span>Rechercher</button>'+
+    '<button class="utility-tile" data-tool="calendar"><span>▦</span>Agenda</button>'+
+    '<button class="utility-tile" data-tool="youtube"><span>▶</span>YouTube</button>'+
+    '<button class="utility-tile" data-tool="spotify"><span>♫</span>Musique</button></div>'+
+    '<p class="utility-caption">Calculs et notes fonctionnent directement ici. Météo, cartes, agenda et médias s’ouvrent dans leurs applications ou dans le navigateur.</p>';
+  document.querySelector(".card.assistant").insertAdjacentElement("afterend",section);
+  document.body.insertAdjacentHTML("beforeend",
+    '<dialog id="utilityDialog"><div class="util-head"><div class="util-title" id="utilityTitle"></div><button class="util-close" id="utilityClose" aria-label="Fermer">×</button></div>'+
+    '<p class="util-help" id="utilityHelp"></p><input class="util-input" id="utilityInput">'+
+    '<textarea class="util-note" id="utilityNote" style="display:none" placeholder="Écris une note à garder sur ce téléphone…"></textarea>'+
+    '<div class="note-list" id="noteList" style="display:none"></div><button class="util-run" id="utilityRun">Continuer</button></dialog>');
+  const dialog=$("utilityDialog"), input=$("utilityInput"), note=$("utilityNote"), list=$("noteList");
+  let current=""; const labels={calc:["Calculatrice","Entre une opération. Exemples : 12 × 4 + 3, (25 + 5) ÷ 2.","Ex. 12 × 4 + 3","Calculer"],notes:["Mes notes","Elles restent enregistrées dans ce navigateur, sur ce téléphone.","Titre ou idée","Enregistrer la note"],weather:["Météo","Entre une ville ; laisse vide pour chercher la météo locale.","Ex. Montpellier","Voir la météo"],maps:["Cartes et itinéraires","Entre une adresse, une ville ou un lieu à trouver.","Où veux-tu aller ?","Ouvrir les cartes"],search:["Recherche web","Écris ce que tu veux rechercher.","Que cherches-tu ?","Rechercher"],calendar:["Agenda","Décris le rendez-vous à ajouter dans ton agenda.","Ex. rendez-vous demain à 15 h","Préparer l’événement"]};
+  const noteKey="ai-core-android-notes-v1";
+  function notes(){try{return JSON.parse(localStorage.getItem(noteKey)||"[]")}catch{return []}}
+  function renderNotes(){list.replaceChildren();notes().forEach((value,index)=>{const row=document.createElement("div");row.className="note-item";const text=document.createElement("span");text.textContent=value;const del=document.createElement("button");del.className="note-delete";del.textContent="×";del.setAttribute("aria-label","Supprimer la note");del.onclick=()=>{const next=notes();next.splice(index,1);localStorage.setItem(noteKey,JSON.stringify(next));renderNotes()};row.append(text,del);list.append(row)})}
+  function openUtility(name,prefill=""){
+    if(name==="youtube"||name==="spotify"){
+      const query=prompt(name==="youtube"?"Que veux-tu regarder ?":"Quelle musique veux-tu écouter ?");
+      const base=name==="youtube"?"https://www.youtube.com/results?search_query=":"https://open.spotify.com/search/";
+      location.href=base+encodeURIComponent(query||"");return
+    }
+    current=name;const cfg=labels[name];$("utilityTitle").textContent=cfg[0];$("utilityHelp").textContent=cfg[1];
+    input.value=prefill;input.placeholder=cfg[2];input.style.display=name==="notes"?"none":"block";
+    note.style.display=name==="notes"?"block":"none";note.value=name==="notes"?prefill:"";
+    list.style.display=name==="notes"?"grid":"none";$("utilityRun").textContent=cfg[3];
+    if(name==="notes")renderNotes();dialog.showModal();(name==="notes"?note:input).focus()
+  }
+  document.querySelectorAll("[data-tool]").forEach(button=>button.addEventListener("click",()=>openUtility(button.dataset.tool)));
+  $("utilityClose").onclick=()=>dialog.close();
+  dialog.addEventListener("click",event=>{if(event.target===dialog)dialog.close()});
+  function calculate(expression){
+    const raw=expression.toLowerCase().replace(/fois/g,"*").replace(/multiplié par/g,"*").replace(/divisé par/g,"/").replace(/plus/g,"+").replace(/moins/g,"-").replace(/,/g,".").replace(/×/g,"*").replace(/÷/g,"/");
+    const tokens=raw.match(/\d+(?:\.\d+)?|[()+\-*/]/g), compact=raw.replace(/\s/g,"");
+    if(!tokens||tokens.join("")!==compact)throw new Error("Écris seulement un calcul avec +, −, ×, ÷ et des parenthèses.");
+    let i=0;
+    function atom(){const t=tokens[i++];if(t==="("){const n=expr();if(tokens[i++]!==")")throw new Error("Parenthèse manquante.");return n}if(t==="+")return atom();if(t==="-")return -atom();const n=Number(t);if(!Number.isFinite(n))throw new Error("Calcul invalide.");return n}
+    function product(){let n=atom();while(["*","/"].includes(tokens[i])){const op=tokens[i++],b=atom();n=op==="*"?n*b:n/b}return n}
+    function expr(){let n=product();while(["+","-"].includes(tokens[i])){const op=tokens[i++],b=product();n=op==="+"?n+b:n-b}return n}
+    const result=expr();if(i!==tokens.length||!Number.isFinite(result))throw new Error("Vérifie ton calcul.");return Number(result.toFixed(8)).toLocaleString("fr-FR")
+  }
+  $("utilityRun").onclick=()=>{
+    const value=(current==="notes"?note.value:input.value).trim();
+    if(current==="calc"){try{$("reply").textContent=value+" = "+calculate(value);dialog.close()}catch(e){$("utilityHelp").textContent=e.message}return}
+    if(current==="notes"){if(!value){$("utilityHelp").textContent="Écris d’abord une note.";return}const saved=notes();saved.unshift(value);localStorage.setItem(noteKey,JSON.stringify(saved.slice(0,30)));note.value="";renderNotes();$("reply").textContent="Note enregistrée sur ce téléphone.";return}
+    if(!value){$("utilityHelp").textContent="Entre une ville, un lieu ou un texte pour continuer.";input.focus();return}
+    let url="";
+    if(current==="weather")url="https://www.google.com/search?q="+encodeURIComponent("météo "+value);
+    if(current==="maps")url="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(value);
+    if(current==="search")url="https://www.google.com/search?q="+encodeURIComponent(value);
+    if(current==="calendar")url="https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent(value);
+    $("reply").textContent=current==="calendar"?"Rendez-vous préparé. Vérifie l’heure et confirme dans ton agenda.":"J’ouvre "+labels[current][0].toLowerCase()+" pour "+value+".";
+    dialog.close();location.href=url
+  };
+  function routeVoice(raw){
+    const text=raw.trim(),s=text.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+    if(/heure/.test(s)){$("reply").textContent="Il est "+new Intl.DateTimeFormat("fr-FR",{hour:"2-digit",minute:"2-digit"}).format(new Date())+".";return}
+    if(/date|quel jour/.test(s)){$("reply").textContent="Nous sommes le "+new Intl.DateTimeFormat("fr-FR",{weekday:"long",day:"numeric",month:"long"}).format(new Date())+".";return}
+    if(/meteo|temps a|temps a/.test(s)){openUtility("weather",text.replace(/.*(?:meteo|temps)(?: a | a )?/i,""));return}
+    if(/calcule|combien font/.test(s)){openUtility("calc",text.replace(/.*(?:calcule|combien font)\\s*/i,"").replace(/fois/gi,"×"));return}
+    if(/note/.test(s)){openUtility("notes",text.replace(/.*note\\s*/i,""));return}
+    if(/itineraire|carte|va a /.test(s)){openUtility("maps",text.replace(/.*(?:itineraire|carte|va a )\\s*/i,""));return}
+    if(/cherche|recherche|google/.test(s)){openUtility("search",text.replace(/.*(?:cherche|recherche|google)\\s*/i,""));return}
+    if(/youtube/.test(s)){openUtility("youtube");return}
+    if(/spotify|musique/.test(s)){openUtility("spotify");return}
+    const m=text.match(/^(?:jarvis[, ]*)?(?:envoie|écris|ecris|rédige|redige)?\\s*(?:un\\s+)?message\\s+(?:à|a)\\s+([^:,.]+)\\s*[:,]\\s*(.+)$/i);
+    if(m){$("person").textContent=m[1].trim();$("message").value=m[2].trim();$("reply").textContent="Brouillon prêt pour "+m[1].trim()+". Choisis son contact et vérifie le texte.";return}
+    $("message").value=text;$("reply").textContent="J’ai préparé ton brouillon. Relis-le avant de continuer."
+  }
+  function smartListen(){
+    const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){toast("La dictée n’est pas disponible ici. Écris ta demande.");return}
+    const recognizer=new SR();recognizer.lang="fr-FR";recognizer.continuous=false;recognizer.interimResults=false;
+    recognizer.onstart=()=>{$("core").classList.add("active");$("status").textContent="JE T’ÉCOUTE…"};
+    recognizer.onend=()=>{$("core").classList.remove("active");$("status").textContent="PRÊT À T’ÉCOUTER"};
+    recognizer.onerror=e=>toast(e.error==="not-allowed"?"Autorise le micro pour dicter.":"Je n’ai pas bien entendu. Réessaie.");
+    recognizer.onresult=e=>routeVoice(e.results[0][0].transcript);
+    try{recognizer.start()}catch{toast("La dictée est déjà en cours.")}
+  }
+  $("listen").onclick=smartListen;$("listen").onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();smartListen()}};
+})();
+</script>
+</body></html>
