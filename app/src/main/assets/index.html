@@ -308,4 +308,46 @@ button:disabled{opacity:.58;filter:saturate(.65)}
 .chat-clear:focus-visible{outline:2px solid #8be0ff;outline-offset:2px}
 @media(max-width:380px){.chat-log{max-height:240px}.chat-text{font-size:11px}}
 </style>
+<style id="compact-device-optimizations">
+/* Navigation stays within reach on phones and tablets while the page scrolls. */
+html{scroll-padding-top:82px}
+.section-nav{position:sticky;top:4px;z-index:10;padding:8px 6px;background:linear-gradient(180deg,#07111fee,#07111fce);backdrop-filter:blur(14px);border:1px solid #b9e4ff12;border-radius:16px;box-shadow:0 8px 24px #0004}
+.section-nav a{scroll-margin-top:84px}
+@media(max-width:340px){
+  .shell{padding-left:12px;padding-right:12px}
+  .brand-mark{width:33px;height:33px}
+  .brand{font-size:15px;letter-spacing:.15em}
+  .sub{font-size:7px;letter-spacing:.14em}
+  .online{padding:7px 8px;font-size:8px}
+  .hero{padding-top:17px}
+  .hero h1{font-size:27px}
+  .orb{width:174px;height:174px;margin:9px auto 1px}
+  .core{width:98px;height:98px}
+  .core:after{width:30px;height:30px;margin:32px auto}
+  .card{padding:13px;margin-top:11px;border-radius:18px}
+  .section-nav{gap:5px;margin-top:11px}
+  .section-nav a{padding:8px 9px;font-size:9px}
+  .offline-actions{grid-template-columns:1fr}
+  .utility-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+  .utility-tile{min-height:66px;padding:6px 3px}
+  .quick{gap:6px}
+  .quick button{padding:9px 4px;font-size:9px}
+  .chat-log{max-height:210px}
+}
+@media(max-height:520px) and (orientation:landscape){
+  .shell{max-width:760px;padding-top:12px}
+  .section-nav{margin-top:8px}
+  .hero{display:grid;grid-template-columns:minmax(0,1fr) 145px;align-items:center;column-gap:12px;padding-top:13px}
+  .hero .eyebrow,.hero h1,.hero p{grid-column:1}
+  .hero h1{font-size:22px;margin:6px 0}
+  .hero p{font-size:11px}
+  .orb{grid-column:2;grid-row:1/4;width:136px;height:136px;margin:0 auto}
+  .core{width:78px;height:78px}
+  .core:after{width:24px;height:24px;margin:26px auto}
+  .orb-label{font-size:8px}
+  .status{grid-column:1/-1}
+  .card{padding:14px;margin-top:10px}
+}
+@media(prefers-reduced-motion:reduce){.section-nav{scroll-behavior:auto;backdrop-filter:none}}
+</style>
 </body></html>
