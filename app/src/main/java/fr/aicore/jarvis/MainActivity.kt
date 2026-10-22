@@ -101,7 +101,7 @@ class MainActivity : Activity() {
                 try {
                     if (conversation == null) initializeModel()
                     modelStatus("L’IA réfléchit…")
-                    val answer = conversation!!.sendMessage(cleaned).text
+                    val answer = conversation!!.sendMessage(cleaned).toString()
                     sendToPage("window.__aiCoreAnswer && window.__aiCoreAnswer(${JSONObject.quote(answer)});")
                     modelStatus("IA hors ligne prête")
                 } catch (e: Exception) {
