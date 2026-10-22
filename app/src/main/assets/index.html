@@ -101,7 +101,7 @@ $('help').onclick=()=>say('Dicte ton message, choisis ton ami et l’application
   section.id="tools";
   section.innerHTML='<div class="label">BIEN PLUS QUE LES MESSAGES</div><div class="utility-grid">'+
     '<button class="utility-tile" data-tool="calc"><span>＋</span>Calculer</button>'+
-    '<button class="utility-tile" data-tool="notes"><span>✎</span>Mes notes</button>'+
+    '<button class="utility-tile" data-tool="notes"><span>✎</span>Mes notes</button><button class="utility-tile" data-tool="tasks"><span>✓</span>Mes tâches</button>'+
     '<button class="utility-tile" data-tool="weather"><span>☼</span>Météo</button>'+
     '<button class="utility-tile" data-tool="maps"><span>⌖</span>Cartes</button>'+
     '<button class="utility-tile" data-tool="search"><span>⌕</span>Rechercher</button>'+
@@ -114,12 +114,15 @@ $('help').onclick=()=>say('Dicte ton message, choisis ton ami et l’application
     '<dialog id="utilityDialog"><div class="util-head"><div class="util-title" id="utilityTitle"></div><button class="util-close" id="utilityClose" aria-label="Fermer">×</button></div>'+
     '<p class="util-help" id="utilityHelp"></p><input class="util-input" id="utilityInput">'+
     '<textarea class="util-note" id="utilityNote" style="display:none" placeholder="Écris une note à garder sur ce téléphone…"></textarea>'+
-    '<div class="note-list" id="noteList" style="display:none"></div><button class="util-run" id="utilityRun">Continuer</button></dialog>');
-  const dialog=$("utilityDialog"), input=$("utilityInput"), note=$("utilityNote"), list=$("noteList");
-  let current=""; const labels={calc:["Calculatrice","Entre une opération. Exemples : 12 × 4 + 3, (25 + 5) ÷ 2.","Ex. 12 × 4 + 3","Calculer"],notes:["Mes notes","Elles restent enregistrées dans ce navigateur, sur ce téléphone.","Titre ou idée","Enregistrer la note"],weather:["Météo","Entre une ville ; laisse vide pour chercher la météo locale.","Ex. Montpellier","Voir la météo"],maps:["Cartes et itinéraires","Entre une adresse, une ville ou un lieu à trouver.","Où veux-tu aller ?","Ouvrir les cartes"],search:["Recherche web","Écris ce que tu veux rechercher.","Que cherches-tu ?","Rechercher"],calendar:["Agenda","Décris le rendez-vous à ajouter dans ton agenda.","Ex. rendez-vous demain à 15 h","Préparer l’événement"]};
-  const noteKey="ai-core-android-notes-v1";
+    '<div class="note-list" id="noteList" style="display:none"></div><div class="task-list" id="taskList" style="display:none"></div><button class="util-run" id="utilityRun">Continuer</button></dialog>');
+  const dialog=$("utilityDialog"), input=$("utilityInput"), note=$("utilityNote"), list=$("noteList"), taskList=$("taskList");
+  let current=""; const labels={calc:["Calculatrice","Entre une opération. Exemples : 12 × 4 + 3, (25 + 5) ÷ 2.","Ex. 12 × 4 + 3","Calculer"],notes:["Mes notes","Elles restent enregistrées dans ce navigateur, sur ce téléphone.","Titre ou idée","Enregistrer la note"],tasks:["Mes tâches","Ta liste est conservée sur ce téléphone. Coche une tâche terminée ou supprime-la.","Ajouter une tâche…","Ajouter la tâche"],weather:["Météo","Entre une ville ; laisse vide pour chercher la météo locale.","Ex. Montpellier","Voir la météo"],maps:["Cartes et itinéraires","Entre une adresse, une ville ou un lieu à trouver.","Où veux-tu aller ?","Ouvrir les cartes"],search:["Recherche web","Écris ce que tu veux rechercher.","Que cherches-tu ?","Rechercher"],calendar:["Agenda","Décris le rendez-vous à ajouter dans ton agenda.","Ex. rendez-vous demain à 15 h","Préparer l’événement"]};
+  const noteKey="ai-core-android-notes-v1",taskKey="ai-core-android-tasks-v1";
   function notes(){try{return JSON.parse(localStorage.getItem(noteKey)||"[]")}catch{return []}}
   function renderNotes(){list.replaceChildren();notes().forEach((value,index)=>{const row=document.createElement("div");row.className="note-item";const text=document.createElement("span");text.textContent=value;const del=document.createElement("button");del.className="note-delete";del.textContent="×";del.setAttribute("aria-label","Supprimer la note");del.onclick=()=>{const next=notes();next.splice(index,1);localStorage.setItem(noteKey,JSON.stringify(next));renderNotes()};row.append(text,del);list.append(row)})}
+  function tasks(){try{return JSON.parse(localStorage.getItem(taskKey)||"[]")}catch{return []}}
+  function saveTasks(items){localStorage.setItem(taskKey,JSON.stringify(items))}
+  function renderTasks(){taskList.replaceChildren();const items=tasks();if(!items.length){const empty=document.createElement("p");empty.className="tasks-empty";empty.textContent="Aucune tâche pour le moment. Ajoute la première ci-dessus.";taskList.append(empty);return}items.forEach((item,index)=>{const row=document.createElement("div");row.className="task-row"+(item.done?" done":"");const check=document.createElement("input");check.type="checkbox";check.checked=!!item.done;check.setAttribute("aria-label",(item.done?"Marquer non terminée : ":"Terminer : ")+item.text);check.onchange=()=>{const next=tasks();next[index].done=check.checked;saveTasks(next);renderTasks()};const text=document.createElement("span");text.className="task-text";text.textContent=item.text;const del=document.createElement("button");del.className="note-delete";del.textContent="×";del.setAttribute("aria-label","Supprimer : "+item.text);del.onclick=()=>{const next=tasks();next.splice(index,1);saveTasks(next);renderTasks()};row.append(check,text,del);taskList.append(row)})}
   function openUtility(name,prefill=""){
     if(name==="github"){location.href="https://github.com/dujardinsami389-beep/ai-core-jarvis";return}
     if(name==="youtube"||name==="spotify"){
@@ -130,8 +133,8 @@ $('help').onclick=()=>say('Dicte ton message, choisis ton ami et l’application
     current=name;const cfg=labels[name];$("utilityTitle").textContent=cfg[0];$("utilityHelp").textContent=cfg[1];
     input.value=prefill;input.placeholder=cfg[2];input.style.display=name==="notes"?"none":"block";
     note.style.display=name==="notes"?"block":"none";note.value=name==="notes"?prefill:"";
-    list.style.display=name==="notes"?"grid":"none";$("utilityRun").textContent=cfg[3];
-    if(name==="notes")renderNotes();dialog.showModal();(name==="notes"?note:input).focus()
+    list.style.display=name==="notes"?"grid":"none";taskList.style.display=name==="tasks"?"grid":"none";$("utilityRun").textContent=cfg[3];
+    if(name==="notes")renderNotes();if(name==="tasks")renderTasks();dialog.showModal();(name==="notes"?note:input).focus()
   }
   document.querySelectorAll("[data-tool]").forEach(button=>button.addEventListener("click",()=>openUtility(button.dataset.tool)));
   $("utilityClose").onclick=()=>dialog.close();
@@ -150,6 +153,7 @@ $('help').onclick=()=>say('Dicte ton message, choisis ton ami et l’application
     const value=(current==="notes"?note.value:input.value).trim();
     if(current==="calc"){try{$("reply").textContent=value+" = "+calculate(value);dialog.close()}catch(e){$("utilityHelp").textContent=e.message}return}
     if(current==="notes"){if(!value){$("utilityHelp").textContent="Écris d’abord une note.";return}const saved=notes();saved.unshift(value);localStorage.setItem(noteKey,JSON.stringify(saved.slice(0,30)));note.value="";renderNotes();$("reply").textContent="Note enregistrée sur ce téléphone.";return}
+    if(current==="tasks"){if(!value){$("utilityHelp").textContent="Écris d’abord une tâche.";input.focus();return}const saved=tasks();saved.push({text:value,done:false});saveTasks(saved.slice(-100));input.value="";renderTasks();$("reply").textContent="Tâche ajoutée à ta liste sur ce téléphone.";input.focus();return}
     if(!value){$("utilityHelp").textContent="Entre une ville, un lieu ou un texte pour continuer.";input.focus();return}
     let url="";
     if(current==="weather")url="https://www.google.com/search?q="+encodeURIComponent("météo "+value);
@@ -267,5 +271,13 @@ button:disabled{opacity:.58;filter:saturate(.65)}
  .section-nav a{padding:8px 11px;font-size:9px}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
+</style>
+<style>
+.task-list{display:grid;gap:8px;margin:12px 0 3px}
+.task-row{display:flex;align-items:center;gap:10px;min-height:48px;padding:9px 10px;border:1px solid #b9e4ff20;border-radius:13px;background:#0b1927;color:#dceaf4}
+.task-row input{width:20px;height:20px;flex:none;accent-color:#8be0ff}
+.task-text{flex:1;min-width:0;overflow-wrap:anywhere;font-size:12px;line-height:1.45}
+.task-row.done .task-text{color:#8ca2b4;text-decoration:line-through}
+.tasks-empty{margin:0;padding:12px;border:1px dashed #b9e4ff26;border-radius:13px;color:#91a7b9;font-size:11px;line-height:1.5}
 </style>
 </body></html>
