@@ -8,6 +8,7 @@ const channelOption = builder => builder.addChannelOption(option => option
 
 export const commands = [
   new SlashCommandBuilder().setName('aide').setDescription('Voir comment utiliser le bot VR'),
+  new SlashCommandBuilder().setName('ping').setDescription('Vérifier que le bot est en ligne'),
   new SlashCommandBuilder().setName('candidature').setDescription('Envoyer une candidature à la communauté VR'),
   channelOption(new SlashCommandBuilder().setName('groupe').setDescription('Trouver des joueurs pour une session VR'))
     .addStringOption(option => option.setName('jeu').setDescription('Jeu VR').setRequired(true).setMaxLength(80))
