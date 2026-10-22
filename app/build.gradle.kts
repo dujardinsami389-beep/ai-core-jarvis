@@ -18,3 +18,6 @@ android {
     }
     kotlinOptions { jvmTarget = "17" }
 }
+dependencies {
+    implementation("com.google.ai.edge.litertlm:litertlm-android:latest.release")
+}
