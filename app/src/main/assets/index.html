@@ -27,9 +27,10 @@
 <p class="offline-copy">Télécharge une fois le modèle officiel, puis discute avec AI CORE sans connexion. Prévois 700 Mo libres pour l’installation et un téléphone avec au moins 4 Go de mémoire vive.</p>
 <div class="offline-actions"><button class="ghost" id="modelPage" type="button">1 · Télécharger le modèle</button><button class="ghost" id="chooseModel" type="button">2 · Installer le fichier</button></div>
 <div class="ai-status" id="aiStatus" aria-live="polite">Le modèle n’est pas encore installé.</div>
+<div class="chat-toolbar"><div><div class="label">CONVERSATION PRIVÉE</div><div class="chat-caption">Historique conservé sur ce téléphone</div></div><button class="chat-clear" id="clearChat" type="button">Effacer</button></div>
+<div class="chat-log" id="chatLog" role="log" aria-live="polite"></div>
 <textarea class="field ai-prompt" id="aiPrompt" placeholder="Pose une question, demande un résumé ou fais rédiger un texte…" aria-label="Demande à l’IA hors ligne"></textarea>
 <button class="send" id="askAI" type="button">Demander à l’IA&nbsp; ✦</button>
-<div class="ai-answer" id="aiAnswer" aria-live="polite">Les réponses restent sur ton téléphone avec le modèle hors ligne.</div>
 <p class="offline-note">Sur la page du modèle, accepte les conditions Gemma et télécharge le fichier <b>gemma3-1b-it-int4.litertlm</b>. Reviens ici pour l’installer.</p>
 </section>
 <nav class="quick"><button id="time" type="button">◷ &nbsp;Heure</button><button id="date" type="button">▦ &nbsp;Date</button><button id="help" type="button">✦ &nbsp;Aide</button></nav><p class="tiny">Le micro ne s’active qu’après ton appui sur le cœur. Les brouillons restent modifiables avant l’envoi.</p>
@@ -58,16 +59,27 @@ $('date').onclick=()=>say('Nous sommes '+new Intl.DateTimeFormat('fr-FR',{weekda
 $('help').onclick=()=>say('Dicte ton message, choisis ton ami et l’application. Le dernier appui sur Envoyer reste entre tes mains.');
 
   window.__aiCoreModelStatus=(message)=>{$("aiStatus").textContent=message};
-  window.__aiCoreAnswer=(answer)=>{$("aiAnswer").textContent=answer;$("askAI").disabled=false};
-  if(window.AndroidAI&&window.AndroidAI.hasModel())$("aiStatus").textContent="Modèle installé · prêt pour la première question";
+  const chatKey="ai-core-private-chat-v1";
+  function loadChat(){try{const value=JSON.parse(localStorage.getItem(chatKey)||"[]");return Array.isArray(value)?value.filter(x=>x&&["user","assistant"].includes(x.role)&&typeof x.text==="string").slice(-12):[]}catch{return []}}
+  let aiTurns=loadChat(),restoreContext=aiTurns.length>0;
+  function saveChat(){aiTurns=aiTurns.slice(-12);try{localStorage.setItem(chatKey,JSON.stringify(aiTurns))}catch{}}
+  function renderChat(){const log=$("chatLog");log.replaceChildren();if(!aiTurns.length){const empty=document.createElement("div");empty.className="chat-empty";empty.textContent="Pose ta première question. Tes échanges restent enregistrés sur ce téléphone.";log.append(empty);return}aiTurns.forEach(turn=>{const bubble=document.createElement("div");bubble.className="chat-bubble "+(turn.role==="user"?"user":"assistant");const who=document.createElement("span");who.className="chat-who";who.textContent=turn.role==="user"?"TOI":"AI CORE";const body=document.createElement("span");body.className="chat-text";body.textContent=turn.text;bubble.append(who,body);log.append(bubble)});log.scrollTop=log.scrollHeight}
+  renderChat();
+  window.__aiCoreAnswer=(answer)=>{aiTurns.push({role:"assistant",text:String(answer).slice(0,3500)});saveChat();renderChat();$("askAI").disabled=false};
+  $("clearChat").onclick=()=>{aiTurns=[];restoreContext=false;saveChat();renderChat();if(window.AndroidAI)window.AndroidAI.newConversation();$("aiStatus").textContent="Nouvelle conversation prête."};
+  if(window.AndroidAI&&window.AndroidAI.hasModel())$("aiStatus").textContent="Modèle installé · prêt pour ta conversation";
   $("modelPage").onclick=()=>{if(window.AndroidAI)window.AndroidAI.openModelPage();else window.open("https://huggingface.co/litert-community/Gemma3-1B-IT","_blank")};
   $("chooseModel").onclick=()=>{if(window.AndroidAI)window.AndroidAI.chooseModel();else toast("Ouvre AI CORE sur ton téléphone Android pour installer le modèle.")};
   $("askAI").onclick=()=>{
     const prompt=$("aiPrompt").value.trim();
     if(!prompt){toast("Écris d’abord ta question.");return}
     if(!window.AndroidAI){toast("L’IA hors ligne fonctionne dans l’application Android.");return}
-    $("askAI").disabled=true;$("aiAnswer").textContent="";$("aiStatus").textContent="Préparation de l’IA…";
-    window.AndroidAI.ask(prompt);
+    const prior=aiTurns.slice(-8).map(t=>(t.role==="user"?"Utilisateur":"AI CORE")+": "+t.text.slice(0,650)).join("\n");
+    const modelPrompt=restoreContext&&prior?("Contexte des échanges précédents. Utilise-le pour répondre naturellement, sans le répéter.\n"+prior+"\nNouvelle demande : "+prompt).slice(0,4900):prompt;
+    restoreContext=false;
+    aiTurns.push({role:"user",text:prompt.slice(0,2000)});saveChat();renderChat();
+    $("aiPrompt").value="";$("askAI").disabled=true;$("aiStatus").textContent="Préparation de l’IA…";
+    window.AndroidAI.ask(modelPrompt);
   };
   $("aiPrompt").addEventListener("keydown",e=>{if(e.key==="Enter"&&(e.ctrlKey||e.metaKey))$("askAI").click()});
 })();
@@ -279,5 +291,21 @@ button:disabled{opacity:.58;filter:saturate(.65)}
 .task-text{flex:1;min-width:0;overflow-wrap:anywhere;font-size:12px;line-height:1.45}
 .task-row.done .task-text{color:#8ca2b4;text-decoration:line-through}
 .tasks-empty{margin:0;padding:12px;border:1px dashed #b9e4ff26;border-radius:13px;color:#91a7b9;font-size:11px;line-height:1.5}
+</style>
+<style>
+.chat-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:15px 0 9px}
+.chat-caption{margin-top:4px;color:#91a7b9;font-size:10px}
+.chat-clear{flex:none;min-height:37px;padding:7px 11px;border:1px solid #ffb5c044;border-radius:11px;background:#2a1c2a;color:#ffd1d6;font-size:10px;font-weight:750}
+.chat-log{display:flex;flex-direction:column;gap:9px;max-height:340px;min-height:112px;overflow:auto;padding:11px;border:1px solid #b9e4ff20;border-radius:16px;background:#081522}
+.chat-empty{margin:auto;color:#91a7b9;text-align:center;font-size:11px;line-height:1.55}
+.chat-bubble{display:flex;flex-direction:column;gap:5px;max-width:92%;padding:10px 12px;border:1px solid #b9e4ff18;border-radius:14px;background:#122436;color:#e3edf5}
+.chat-bubble.user{align-self:flex-end;border-color:#74dfff3b;background:#123348}
+.chat-bubble.assistant{align-self:flex-start;border-color:#9affdd2b;background:#122a2c}
+.chat-who{color:#91a7b9;font-size:9px;font-weight:850;letter-spacing:.12em}
+.chat-bubble.user .chat-who{color:#9fe3ff}
+.chat-bubble.assistant .chat-who{color:#a8ffdf}
+.chat-text{font-size:12px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
+.chat-clear:focus-visible{outline:2px solid #8be0ff;outline-offset:2px}
+@media(max-width:380px){.chat-log{max-height:240px}.chat-text{font-size:11px}}
 </style>
 </body></html>
