@@ -1,0 +1,16 @@
+{
+  "name": "ai-core-vr-discord-bot",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Bot Discord francophone pour organiser une communauté VR.",
+  "engines": { "node": ">=22.12.0" },
+  "scripts": {
+    "deploy": "node scripts/deploy-commands.js",
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "discord.js": "14.27.0",
+    "dotenv": "^16.4.7"
+  }
+}
