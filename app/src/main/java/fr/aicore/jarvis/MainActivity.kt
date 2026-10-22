@@ -110,6 +110,21 @@ class MainActivity : Activity() {
                 }
             }
         }
+
+        @JavascriptInterface fun newConversation() {
+            worker.execute {
+                try {
+                    conversation?.close()
+                    conversation = engine?.createConversation()
+                    modelStatus("Nouvelle conversation prête")
+                } catch (_: Exception) {
+                    try { engine?.close() } catch (_: Exception) {}
+                    engine = null
+                    conversation = null
+                    modelStatus("Nouvelle conversation prête")
+                }
+            }
+        }
     }
 
     private fun initializeModel() {
