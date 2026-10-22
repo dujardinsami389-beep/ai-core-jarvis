@@ -61,12 +61,12 @@ $('help').onclick=()=>say('Dicte ton message, choisis ton ami et l’application
   window.__aiCoreModelStatus=(message)=>{$("aiStatus").textContent=message};
   const chatKey="ai-core-private-chat-v1";
   function loadChat(){try{const value=JSON.parse(localStorage.getItem(chatKey)||"[]");return Array.isArray(value)?value.filter(x=>x&&["user","assistant"].includes(x.role)&&typeof x.text==="string").slice(-12):[]}catch{return []}}
-  let aiTurns=loadChat(),restoreContext=aiTurns.length>0;
+  let aiTurns=loadChat(),restoreContext=aiTurns.length>0,discardNextAnswer=false;
   function saveChat(){aiTurns=aiTurns.slice(-12);try{localStorage.setItem(chatKey,JSON.stringify(aiTurns))}catch{}}
   function renderChat(){const log=$("chatLog");log.replaceChildren();if(!aiTurns.length){const empty=document.createElement("div");empty.className="chat-empty";empty.textContent="Pose ta première question. Tes échanges restent enregistrés sur ce téléphone.";log.append(empty);return}aiTurns.forEach(turn=>{const bubble=document.createElement("div");bubble.className="chat-bubble "+(turn.role==="user"?"user":"assistant");const who=document.createElement("span");who.className="chat-who";who.textContent=turn.role==="user"?"TOI":"AI CORE";const body=document.createElement("span");body.className="chat-text";body.textContent=turn.text;bubble.append(who,body);log.append(bubble)});log.scrollTop=log.scrollHeight}
   renderChat();
-  window.__aiCoreAnswer=(answer)=>{aiTurns.push({role:"assistant",text:String(answer).slice(0,3500)});saveChat();renderChat();$("askAI").disabled=false};
-  $("clearChat").onclick=()=>{aiTurns=[];restoreContext=false;saveChat();renderChat();if(window.AndroidAI)window.AndroidAI.newConversation();$("aiStatus").textContent="Nouvelle conversation prête."};
+  window.__aiCoreAnswer=(answer)=>{if(discardNextAnswer){discardNextAnswer=false;$("askAI").disabled=false;return}aiTurns.push({role:"assistant",text:String(answer).slice(0,3500)});saveChat();renderChat();$("askAI").disabled=false};
+  $("clearChat").onclick=()=>{if($("askAI").disabled)discardNextAnswer=true;aiTurns=[];restoreContext=false;saveChat();renderChat();if(window.AndroidAI)window.AndroidAI.newConversation();$("aiStatus").textContent="Nouvelle conversation prête."};
   if(window.AndroidAI&&window.AndroidAI.hasModel())$("aiStatus").textContent="Modèle installé · prêt pour ta conversation";
   $("modelPage").onclick=()=>{if(window.AndroidAI)window.AndroidAI.openModelPage();else window.open("https://huggingface.co/litert-community/Gemma3-1B-IT","_blank")};
   $("chooseModel").onclick=()=>{if(window.AndroidAI)window.AndroidAI.chooseModel();else toast("Ouvre AI CORE sur ton téléphone Android pour installer le modèle.")};
