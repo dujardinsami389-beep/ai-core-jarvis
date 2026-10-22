@@ -9,11 +9,12 @@
 .offline-title{font-size:14px;font-weight:850;letter-spacing:.02em}.offline-copy{margin:8px 0 12px;color:#b6c9d8;font-size:11px;line-height:1.55}.offline-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.offline-actions .ghost{min-height:42px}.ai-answer{min-height:44px;margin-top:10px;padding:11px 12px;border-radius:13px;background:#081320;color:#d9e8f2;font-size:12px;line-height:1.55;white-space:pre-wrap}.ai-status{margin:8px 0;color:var(--mint);font-size:10px;min-height:14px}.ai-prompt{margin-top:10px;min-height:80px;resize:vertical}.offline-note{margin:9px 0 0;color:#90a6bb;font-size:9px;line-height:1.5}</style>
 </head>
 <body><main class="shell">
-<header class="top"><div class="brand-lockup"><svg class="brand-mark" viewBox="0 0 48 48" role="img" aria-label="Logo AI CORE"><defs><linearGradient id="brandGlow" x1="7" y1="4" x2="41" y2="44" gradientUnits="userSpaceOnUse"><stop stop-color="#8deaff"/><stop offset="1" stop-color="#75f5ce"/></linearGradient></defs><path d="M24 3.5 41 10v12.2c0 10.2-6.8 18.1-17 22.3C13.8 40.3 7 32.4 7 22.2V10l17-6.5Z" fill="#10283b" stroke="url(#brandGlow)" stroke-width="2"/><path d="M24 13v22M15 24h18M17.5 17.5l13 13M30.5 17.5l-13 13" stroke="url(#brandGlow)" stroke-width="2" stroke-linecap="round" opacity=".8"/><circle cx="24" cy="24" r="5" fill="#d8fbff"/><circle cx="24" cy="24" r="2.2" fill="#44c8fa"/></svg><div class="brand-copy"><div class="brand">AI CORE</div><div class="sub">J A R V I S&nbsp; / &nbsp;M O B I L E</div></div></div><div class="online"><i></i>EN LIGNE</div></header>
-<section class="hero"><div class="eyebrow">TON ASSISTANT PERSONNEL</div><h1>À tes côtés,<br>sur ton Android.</h1><p>Parle. Prépare. Choisis ton application.</p>
+<header class="top"><div class="brand-lockup"><svg class="brand-mark" viewBox="0 0 48 48" role="img" aria-label="Logo AI CORE"><defs><linearGradient id="brandGlow" x1="7" y1="4" x2="41" y2="44" gradientUnits="userSpaceOnUse"><stop stop-color="#8deaff"/><stop offset="1" stop-color="#75f5ce"/></linearGradient></defs><path d="M24 3.5 41 10v12.2c0 10.2-6.8 18.1-17 22.3C13.8 40.3 7 32.4 7 22.2V10l17-6.5Z" fill="#10283b" stroke="url(#brandGlow)" stroke-width="2"/><path d="M24 13v22M15 24h18M17.5 17.5l13 13M30.5 17.5l-13 13" stroke="url(#brandGlow)" stroke-width="2" stroke-linecap="round" opacity=".8"/><circle cx="24" cy="24" r="5" fill="#d8fbff"/><circle cx="24" cy="24" r="2.2" fill="#44c8fa"/></svg><div class="brand-copy"><div class="brand">AI CORE</div><div class="sub">J A R V I S&nbsp; / &nbsp;M O B I L E</div></div></div><div class="online"><i></i>PRÊT</div></header>
+<nav class="section-nav" aria-label="Accès rapide"><a href="#messages">Messages</a><a href="#offline-ai">IA hors ligne</a><a href="#tools">Outils</a></nav>
+<section class="hero" id="accueil"><div class="eyebrow">TON ASSISTANT PERSONNEL</div><h1>Ton assistant,<br>dans ta poche.</h1><p>Parle, crée, organise. Tu gardes la main.</p>
 <div class="orb" id="listen" role="button" tabindex="0" aria-label="Dicter un message"><div class="ring"></div><div class="ring r2"></div><div class="ring r3"></div><div class="core" id="core"></div><div class="orb-label">TOUCHE POUR PARLER</div></div><div class="status" id="status">PRÊT À T’ÉCOUTER</div></section>
 <section class="card assistant"><div class="avatar">J</div><div><b>JARVIS</b><p id="reply">Je prépare ton message puis je l’ouvre dans WhatsApp, SMS, Telegram ou l’appli de ton choix.</p></div></section>
-<section class="card">
+<section class="card" id="messages">
 <div class="row"><div><div class="label">DESTINATAIRE</div><div class="person" id="person">Choisis un ami</div></div><button class="ghost" id="pick" type="button">Contacts +</button></div>
 <input class="field" id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="Ou saisis son numéro (+33…)" aria-label="Numéro du destinataire" style="margin-top:10px">
 <div class="label" style="margin-top:16px">OUVRIR DANS</div><div class="channels" id="channels"><button class="chip sel" data-app="WhatsApp">WhatsApp</button><button class="chip" data-app="SMS">SMS</button><button class="chip" data-app="Telegram">Telegram</button><button class="chip" data-app="Signal">Signal</button><button class="chip" data-app="Autre appli">Autre appli</button></div>
@@ -21,7 +22,7 @@
 <div class="quicktexts"><button class="suggest" data-text="Je suis en retard, j’arrive bientôt !">J’arrive bientôt</button><button class="suggest" data-text="Tu es disponible pour qu’on s’appelle ?">On s’appelle ?</button><button class="suggest" data-text="Merci pour tout, ça m’a fait très plaisir 😊">Dire merci</button></div>
 <button class="send" id="send" type="button">Continuer avec WhatsApp&nbsp; ↗</button><p class="fine">Le message s’ouvre dans l’appli choisie. Tu le relis et appuies toi-même sur Envoyer.</p></div>
 </section>
-<section class="card">
+<section class="card" id="offline-ai">
 <div class="row"><div><div class="offline-title">IA hors ligne</div><div class="label" style="margin-top:4px">GEMMA 3 · ENVIRON 529 MO</div></div><div class="avatar">✦</div></div>
 <p class="offline-copy">Télécharge une fois le modèle officiel, puis discute avec AI CORE sans connexion. Prévois 700 Mo libres pour l’installation et un téléphone avec au moins 4 Go de mémoire vive.</p>
 <div class="offline-actions"><button class="ghost" id="modelPage" type="button">1 · Télécharger le modèle</button><button class="ghost" id="chooseModel" type="button">2 · Installer le fichier</button></div>
@@ -31,7 +32,7 @@
 <div class="ai-answer" id="aiAnswer" aria-live="polite">Les réponses restent sur ton téléphone avec le modèle hors ligne.</div>
 <p class="offline-note">Sur la page du modèle, accepte les conditions Gemma et télécharge le fichier <b>gemma3-1b-it-int4.litertlm</b>. Reviens ici pour l’installer.</p>
 </section>
-<nav class="quick"><button id="time" type="button">◷ &nbsp;Heure</button><button id="date" type="button">▦ &nbsp;Date</button><button id="help" type="button">✦ &nbsp;Aide</button></nav><p class="tiny">Le micro ne s’active qu’après ton appui sur le cœur.</p>
+<nav class="quick"><button id="time" type="button">◷ &nbsp;Heure</button><button id="date" type="button">▦ &nbsp;Date</button><button id="help" type="button">✦ &nbsp;Aide</button></nav><p class="tiny">Le micro ne s’active qu’après ton appui sur le cœur. Les brouillons restent modifiables avant l’envoi.</p>
 </main><div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script>
 (()=>{const $=id=>document.getElementById(id),msg=$('message'),phone=$('phone'),core=$('core');let app='WhatsApp';
@@ -97,6 +98,7 @@ $('help').onclick=()=>say('Dicte ton message, choisis ton ami et l’application
   const $=id=>document.getElementById(id);
   const section=document.createElement("section");
   section.className="card";
+  section.id="tools";
   section.innerHTML='<div class="label">BIEN PLUS QUE LES MESSAGES</div><div class="utility-grid">'+
     '<button class="utility-tile" data-tool="calc"><span>＋</span>Calculer</button>'+
     '<button class="utility-tile" data-tool="notes"><span>✎</span>Mes notes</button>'+
@@ -186,4 +188,84 @@ $('help').onclick=()=>say('Dicte ton message, choisis ton ami et l’application
   $("listen").onclick=smartListen;$("listen").onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();smartListen()}};
 })();
 </script>
+<style>
+:root{--bg:#07111f;--ink:#f2f8ff;--muted:#9bb0c4;--cyan:#8be0ff;--mint:#9fffe1;--line:#b9e4ff24;--panel:#111f30}
+html{scroll-behavior:smooth;scroll-padding-top:18px}
+body{background:radial-gradient(ellipse at 50% -5%,#214c69 0,#10283b 27%,#091827 58%,#050d17 100%);background-attachment:fixed}
+.shell{max-width:540px;padding:clamp(16px,4.8vw,25px) clamp(15px,4.5vw,23px) 28px}
+.top{min-height:47px}
+.brand-mark{width:39px;height:39px}
+.brand{font-size:18px;letter-spacing:.22em}
+.sub{font-size:9px;letter-spacing:.19em}
+.online{padding:8px 12px;background:#102b2c;border-color:#9affdd42;color:#b6ffe8}
+.online i{width:7px;height:7px}
+.section-nav{display:flex;gap:8px;overflow-x:auto;margin:19px -2px 0;padding:2px 2px 7px;scrollbar-width:none}
+.section-nav::-webkit-scrollbar{display:none}
+.section-nav a{flex:none;padding:9px 13px;border:1px solid #b9e4ff20;border-radius:999px;background:#0d1b29cc;color:#c5d7e5;text-decoration:none;font-size:10px;font-weight:750;letter-spacing:.02em}
+.section-nav a:first-child{border-color:#7bdcff47;color:#a8e8ff}
+.section-nav a:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.hero{padding-top:25px}
+.eyebrow{color:#9dc8dc;font-size:10px;letter-spacing:.23em}
+.hero h1{margin:13px 0 8px;font-size:clamp(30px,8vw,38px);line-height:1.05;letter-spacing:-.055em}
+.hero p{font-size:13px;color:#b5c8d8}
+.orb{width:min(228px,72vw);height:min(228px,72vw);margin:18px auto 5px}
+.core{width:122px;height:122px;max-width:54%;max-height:54%}
+.core:after{margin:38px auto}
+.orb:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;border-radius:50%}
+.orb-label{font-size:10px;color:#d4e7f2;letter-spacing:.18em}
+.status{font-size:10px;letter-spacing:.16em}
+.card{margin-top:15px;padding:18px;border-radius:23px;border-color:#b9e4ff27;background:linear-gradient(145deg,#15283bed,#0c1727f2);box-shadow:0 18px 46px #0004,inset 0 1px #ffffff08}
+.card.assistant{border-color:#71d9ff35;background:linear-gradient(115deg,#133144ed,#101d2cf2)}
+.assistant .avatar{box-shadow:0 0 20px #7bdcff30}
+.assistant b{font-size:10px;color:#9ce8ff}
+.assistant p{font-size:13px;line-height:1.55}
+.label{font-size:10px;letter-spacing:.14em;color:#9cb3c7}
+.person{font-size:15px}
+.field{min-height:46px;border-color:#a8dfff35;border-radius:14px;background:#071321;color:#f2f8ff;font-size:14px;padding:12px 14px}
+.field:focus{border-color:#8be0ff;box-shadow:0 0 0 3px #7bdcff22}
+.field::placeholder{color:#8399ac}
+.compose textarea{min-height:88px}
+.channels{gap:8px;padding:3px 1px 7px}
+.chip{padding:10px 14px;border-color:#b9e4ff20;background:#0a1724;font-size:11px}
+.chip.sel{border-color:#9affdd9c;background:linear-gradient(120deg,#173c43,#153448);color:#b4ffe5;box-shadow:inset 0 0 0 1px #9affdd15}
+.ghost,.suggest,.quick button,.utility-tile,.util-close{transition:transform .16s ease,border-color .16s ease,background .16s ease,filter .16s ease}
+.ghost{min-height:42px;border-color:#8be0ff55;border-radius:13px;background:#132c40;color:#c7efff;font-size:11px}
+.ghost:active,.suggest:active,.quick button:active,.utility-tile:active,.util-close:active{transform:scale(.97)}
+.suggest{min-height:34px;padding:8px 11px;border-color:#b9e4ff24;background:#112235;color:#d3e4ef;font-size:10px}
+.send,.util-run{min-height:51px;border-radius:16px;background:linear-gradient(105deg,#7bdcff 0%,#9fffe1 100%);color:#061522;font-size:14px;box-shadow:0 10px 28px #44bfff2b,inset 0 1px #ffffffa8;transition:filter .15s ease,transform .15s ease}
+.send:active,.util-run:active{transform:translateY(1px);filter:brightness(.95)}
+.fine{font-size:10px;color:#91a7b9;line-height:1.55}
+.offline-title{font-size:16px}
+.offline-copy{font-size:12px;color:#bfd0dd;line-height:1.65}
+.offline-actions{gap:10px}
+.offline-actions .ghost{min-height:48px}
+.ai-prompt{min-height:92px}
+.ai-answer{min-height:55px;border:1px solid #b9e4ff16;background:#081522;color:#e0edf5;font-size:13px}
+.utility-grid{gap:10px;margin-top:16px}
+.utility-tile{min-height:78px;border-color:#b9e4ff24;border-radius:17px;background:linear-gradient(145deg,#172b3e,#0a1725);font-size:10px}
+.utility-tile span{color:#9fffe1;font-size:21px}
+.utility-caption{margin-top:12px;font-size:10px;line-height:1.55;color:#91a7b9}
+.quick{gap:9px;margin:16px 0}
+.quick button{min-height:44px;border-color:#b9e4ff22;border-radius:15px;background:#101f2e;color:#dce9f2;font-size:11px}
+.tiny{max-width:340px;margin:10px auto 0;font-size:10px;line-height:1.55;color:#8299ad}
+.toast{z-index:5;max-width:min(90vw,420px);padding:13px 16px;border:1px solid #08152320;border-radius:15px;font-size:12px}
+#utilityDialog{padding:20px;border-color:#b9e4ff45;background:linear-gradient(145deg,#162b3f,#081522)}
+.util-title{font-size:18px}
+.util-help{font-size:12px;line-height:1.6}
+.util-input,.util-note{min-height:48px;border-color:#a8dfff35;font-size:14px}
+.note-item{align-items:center;border-color:#b9e4ff20;background:#0c1b29;font-size:12px}
+.note-delete{width:32px;height:32px;border-radius:10px;background:#281c2a}
+button,a,textarea,input{ -webkit-tap-highlight-color:transparent }
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+button:disabled{opacity:.58;filter:saturate(.65)}
+@media(max-width:380px){
+ .shell{padding-left:14px;padding-right:14px}
+ .card{padding:15px;border-radius:20px}
+ .offline-actions{grid-template-columns:1fr}
+ .utility-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+ .utility-tile{min-height:70px;padding:7px 3px;font-size:9px}
+ .section-nav a{padding:8px 11px;font-size:9px}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
+</style>
 </body></html>
