@@ -35,7 +35,13 @@
 </section>
 <section class="card" id="media">
 <div class="row"><div><div class="offline-title">AI CORE Média</div><div class="label" style="margin-top:4px">VIDÉOS · MUSIQUE · DÉCOUVERTES</div></div><div class="avatar" aria-hidden="true">▶</div></div>
-<p class="media-intro">Trouve une vidéo, une musique ou un sujet à explorer. Choisis où lancer ta recherche.</p>
+<p class="media-intro">Ajoute tes propres vidéos, garde-les dans ta vidéothèque et regarde-les directement ici.</p>
+<div class="media-heading"><div><div class="label">MA VIDÉOTHÈQUE</div><div class="media-caption">Tes vidéos personnelles, enregistrées sur cet appareil</div></div></div>
+<button class="send own-video-add" id="mediaImport" type="button">＋ &nbsp;Ajouter une vidéo</button>
+<div class="ai-status own-video-status" id="mediaStatus" role="status" aria-live="polite">Les vidéos restent privées sur ta tablette.</div>
+<div class="own-video-player" id="mediaPlayerWrap" hidden><video id="mediaPlayer" controls playsinline preload="metadata"></video><div class="own-video-playing" id="mediaPlayingTitle"></div></div>
+<div class="own-video-list" id="mediaLibrary"></div>
+<div class="media-heading"><div><div class="label">DÉCOUVRIR AUSSI</div><div class="media-caption">Rechercher sur les plateformes vidéo et musique</div></div></div>
 <div class="media-sources" role="group" aria-label="Choisir une plateforme média">
 <button class="media-source active" data-media-source="youtube" aria-pressed="true">YouTube</button><button class="media-source" data-media-source="music" aria-pressed="false">YouTube Music</button><button class="media-source" data-media-source="spotify" aria-pressed="false">Spotify</button>
 </div>
@@ -47,7 +53,7 @@
 <div class="media-grid" id="mediaFeed"></div>
 <div class="media-heading saved-heading"><div><div class="label">MES FAVORIS</div><div class="media-caption">Enregistrés uniquement sur cet appareil</div></div></div>
 <div class="media-saved" id="mediaSaved"></div>
-<p class="media-note">Les vidéos et musiques s’ouvrent dans la plateforme choisie. AI CORE ne stocke ni ne publie de vidéos.</p>
+<p class="media-note">Tes vidéos importées restent dans l’application sur cet appareil. La recherche externe ouvre la plateforme choisie.</p>
 </section>
 <nav class="quick"><button id="time" type="button">◷ &nbsp;Heure</button><button id="date" type="button">▦ &nbsp;Date</button><button id="help" type="button">✦ &nbsp;Aide</button></nav><p class="tiny">Le micro ne s’active qu’après ton appui sur le cœur. Les brouillons restent modifiables avant l’envoi.</p>
 </main><div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -416,6 +422,37 @@ savedBox.addEventListener("click",event=>{const open=event.target.closest("[data
 $("mediaGo").addEventListener("click",()=>openMedia(query.value));query.addEventListener("keydown",event=>{if(event.key==="Enter"){event.preventDefault();openMedia(query.value)}});
 saveButton.addEventListener("click",()=>{const value=query.value.trim();if(!value){toast("Écris une recherche avant de l’enregistrer.");query.focus();return}toggleFavorite(value,value);saveButton.textContent=isSaved(value)?"★":"☆";setTimeout(()=>saveButton.textContent="☆",900)});
 render()
+})();
+</script>
+<style id="ai-core-owned-video-style">
+.own-video-add{width:100%;margin-top:2px}
+.own-video-status{min-height:18px;margin:10px 2px 8px}
+.own-video-list{display:grid;gap:8px}
+.own-video-row{display:grid;grid-template-columns:44px minmax(0,1fr) 39px;gap:10px;align-items:center;min-height:67px;padding:9px;border:1px solid #b9e4ff20;border-radius:15px;background:linear-gradient(145deg,#152b3d,#0b1825)}
+.own-video-play{display:grid;place-items:center;width:44px;height:44px;border:1px solid #7bdcff57;border-radius:13px;background:radial-gradient(circle at 35% 28%,#70dcff,#174a66 70%);color:white;font-size:17px}
+.own-video-title{min-width:0;overflow:hidden;color:#edf8ff;text-overflow:ellipsis;white-space:nowrap;font-size:12px;font-weight:750}
+.own-video-size{margin-top:5px;color:#91a7b9;font-size:10px}
+.own-video-delete{width:36px;height:36px;border:1px solid #ffb5c02c;border-radius:11px;background:#281c2a;color:#ffd1d6;font-size:16px}
+.own-video-empty{margin:0;padding:13px;border:1px dashed #b9e4ff26;border-radius:14px;color:#91a7b9;text-align:center;font-size:11px;line-height:1.55}
+.own-video-player{margin:9px 0 12px;padding:10px;border:1px solid #7bdcff45;border-radius:16px;background:#071321}
+.own-video-player[hidden]{display:none}
+.own-video-player video{display:block;width:100%;max-height:52vh;border-radius:10px;background:#000}
+.own-video-playing{padding:9px 2px 1px;color:#dceaf4;font-size:11px;overflow-wrap:anywhere}
+@media(max-width:380px){.own-video-row{grid-template-columns:40px minmax(0,1fr) 36px;gap:8px;padding:8px}.own-video-play{width:40px;height:40px}}
+</style>
+<script id="ai-core-owned-video-script">
+(()=>{const $=id=>document.getElementById(id),list=$("mediaLibrary"),status=$("mediaStatus"),playerWrap=$("mediaPlayerWrap"),player=$("mediaPlayer"),playingTitle=$("mediaPlayingTitle"),add=$("mediaImport");if(!list||!status||!player||!add)return;
+let videos=[];
+function showStatus(message){status.textContent=message}
+function sizeLabel(bytes){if(!Number.isFinite(Number(bytes))||Number(bytes)<=0)return "Vidéo";const n=Number(bytes);return n>=1073741824?(n/1073741824).toFixed(1)+" Go":n>=1048576?(n/1048576).toFixed(0)+" Mo":Math.ceil(n/1024)+" Ko"}
+function render(){list.replaceChildren();if(!videos.length){const empty=document.createElement("p");empty.className="own-video-empty";empty.textContent="Ta vidéothèque est vide. Appuie sur « Ajouter une vidéo » pour choisir une vidéo de ta tablette.";list.append(empty);return}
+videos.forEach(item=>{const row=document.createElement("article");row.className="own-video-row";const play=document.createElement("button");play.className="own-video-play";play.type="button";play.textContent="▶";play.setAttribute("aria-label","Lire "+item.title);play.addEventListener("click",()=>{player.src=item.uri;playingTitle.textContent=item.title;playerWrap.hidden=false;player.load();player.play().catch(()=>{});playerWrap.scrollIntoView({behavior:"smooth",block:"center"})});const details=document.createElement("div");details.style.minWidth="0";const title=document.createElement("div");title.className="own-video-title";title.textContent=item.title;const size=document.createElement("div");size.className="own-video-size";size.textContent=sizeLabel(item.bytes);details.append(title,size);const remove=document.createElement("button");remove.className="own-video-delete";remove.type="button";remove.textContent="×";remove.setAttribute("aria-label","Supprimer "+item.title);remove.addEventListener("click",()=>{if(confirm("Supprimer « "+item.title+" » de ta vidéothèque AI CORE ?"))AndroidMedia.deleteVideo(item.id)});row.append(play,details,remove);list.append(row)})}
+function refresh(){try{videos=JSON.parse(AndroidMedia.listVideos()||"[]");if(!Array.isArray(videos))videos=[];render()}catch{videos=[];render()}}
+add.addEventListener("click",()=>{if(window.AndroidMedia)AndroidMedia.chooseVideo();else showStatus("L’import vidéo est disponible dans l’application Android.")});
+window.__aiCoreMediaStatus=showStatus;
+window.__aiCoreVideoImported=raw=>{try{videos=JSON.parse(raw||"[]");if(!Array.isArray(videos))videos=[];render()}catch{refresh()}};
+window.__aiCoreVideosChanged=refresh;
+if(window.AndroidMedia){refresh()}else render()
 })();
 </script>
 </body></html>
