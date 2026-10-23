@@ -28,6 +28,7 @@ class MainActivity : Activity() {
     private val permissionRequest = 42
     private val speechRequest = 43
     private val modelRequest = 44
+    private val mediaRequest = 45
     private val worker = Executors.newSingleThreadExecutor()
     private var engine: Engine? = null
     private var conversation: Conversation? = null
@@ -46,6 +47,7 @@ class MainActivity : Activity() {
         web.settings.allowContentAccess = false
         web.addJavascriptInterface(SpeechBridge(), "AndroidSpeech")
         web.addJavascriptInterface(AICoreBridge(), "AndroidAI")
+        web.addJavascriptInterface(MediaBridge(), "AndroidMedia")
         web.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
                 val uri = request.url
@@ -134,6 +136,86 @@ class MainActivity : Activity() {
         newEngine.initialize()
         engine = newEngine
         conversation = newEngine.createConversation()
+    }
+
+    private inner class MediaBridge {
+        @JavascriptInterface fun chooseVideo() {
+            runOnUiThread {
+                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = "video/*"
+                    putExtra(Intent.EXTRA_TITLE, "Choisir une vidéo pour AI CORE")
+                }
+                startActivityForResult(intent, mediaRequest)
+            }
+        }
+
+        @JavascriptInterface fun listVideos(): String = videoLibraryJson().toString()
+
+        @JavascriptInterface fun deleteVideo(id: String) {
+            worker.execute {
+                val safeId = id.take(80)
+                val dir = File(filesDir, "ai-core-videos")
+                val target = dir.listFiles()?.firstOrNull { it.isFile && it.nameWithoutExtension == safeId }
+                val removed = target?.delete() == true
+                if (removed) getSharedPreferences("ai-core-videos", MODE_PRIVATE).edit().remove(safeId).apply()
+                sendToPage("window.__aiCoreVideosChanged && window.__aiCoreVideosChanged();")
+                if (!removed) mediaStatus("Impossible de supprimer cette vidéo.")
+            }
+        }
+    }
+
+    private fun videoLibraryJson(): org.json.JSONArray {
+        val items = org.json.JSONArray()
+        val dir = File(filesDir, "ai-core-videos")
+        dir.listFiles()?.filter { it.isFile && !it.name.endsWith(".tmp") }?.sortedByDescending { it.lastModified() }?.forEach { file ->
+            val id = file.nameWithoutExtension
+            val title = getSharedPreferences("ai-core-videos", MODE_PRIVATE).getString(id, id) ?: id
+            items.put(JSONObject().put("id", id).put("title", title).put("uri", Uri.fromFile(file).toString()).put("bytes", file.length()))
+        }
+        return items
+    }
+
+    private fun mediaStatus(message: String) =
+        sendToPage("window.__aiCoreMediaStatus && window.__aiCoreMediaStatus(${JSONObject.quote(message)});")
+
+    private fun importVideo(uri: Uri) {
+        worker.execute {
+            val dir = File(filesDir, "ai-core-videos")
+            val name = displayName(uri).orEmpty().ifBlank { "Ma vidéo.mp4" }
+            val extension = name.substringAfterLast('.', "mp4").lowercase(Locale.ROOT).filter { it.isLetterOrDigit() }.take(8).ifBlank { "mp4" }
+            val id = java.util.UUID.randomUUID().toString()
+            val temp = File(dir, "$id.tmp")
+            val target = File(dir, "$id.$extension")
+            try {
+                if (!dir.exists() && !dir.mkdirs()) throw java.io.IOException("Impossible de créer la vidéothèque.")
+                if (dir.usableSpace < 100L * 1024 * 1024) throw java.io.IOException("Il faut garder au moins 100 Mo libres sur l’appareil.")
+                mediaStatus("Import de la vidéo en cours…")
+                contentResolver.openInputStream(uri).use { input ->
+                    requireNotNull(input) { "La vidéo n’est pas accessible." }
+                    temp.outputStream().buffered().use { output ->
+                        val buffer = ByteArray(1024 * 1024)
+                        var copied = 0L
+                        while (true) {
+                            val count = input.read(buffer)
+                            if (count < 0) break
+                            if (dir.usableSpace < count + 50L * 1024 * 1024) throw java.io.IOException("Espace insuffisant pour copier cette vidéo.")
+                            output.write(buffer, 0, count)
+                            copied += count
+                        }
+                        if (copied == 0L) throw java.io.IOException("Le fichier vidéo est vide.")
+                    }
+                }
+                if (!temp.renameTo(target)) throw java.io.IOException("Impossible d’enregistrer la vidéo.")
+                getSharedPreferences("ai-core-videos", MODE_PRIVATE).edit().putString(id, name).apply()
+                val payload = videoLibraryJson().toString()
+                sendToPage("window.__aiCoreVideoImported && window.__aiCoreVideoImported(${JSONObject.quote(payload)});")
+                mediaStatus("Vidéo ajoutée à ta vidéothèque.")
+            } catch (e: Exception) {
+                temp.delete()
+                mediaStatus("Import impossible : ${e.message ?: "réessaie avec une autre vidéo"}")
+            }
+        }
     }
 
     private inner class SpeechBridge {
@@ -229,6 +311,7 @@ class MainActivity : Activity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == modelRequest && resultCode == RESULT_OK) data?.data?.let(::importModel)
+        if (requestCode == mediaRequest && resultCode == RESULT_OK) data?.data?.let(::importVideo)
         if (requestCode != speechRequest) return
         if (resultCode == RESULT_OK) {
             val phrase = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.firstOrNull().orEmpty()
