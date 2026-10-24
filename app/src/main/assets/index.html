@@ -39,7 +39,8 @@
 <div class="media-heading"><div><div class="label">MA VIDÉOTHÈQUE</div><div class="media-caption">Tes vidéos personnelles, enregistrées sur cet appareil</div></div></div>
 <button class="send own-video-add" id="mediaImport" type="button">＋ &nbsp;Ajouter une vidéo</button>
 <div class="ai-status own-video-status" id="mediaStatus" role="status" aria-live="polite">Les vidéos restent privées sur ta tablette.</div>
-<div class="own-video-player" id="mediaPlayerWrap" hidden><video id="mediaPlayer" controls playsinline preload="metadata"></video><div class="own-video-playing" id="mediaPlayingTitle"></div></div>
+<div class="own-video-player" id="mediaPlayerWrap" hidden><div class="own-video-player-bar"><div class="own-video-playing" id="mediaPlayingTitle"></div><button class="ghost own-video-close" id="mediaClose" type="button">Fermer</button></div><video id="mediaPlayer" controls playsinline preload="metadata"></video></div>
+<div class="own-video-tools"><input class="field own-video-search" id="ownVideoSearch" type="search" placeholder="Rechercher dans mes vidéos…" aria-label="Rechercher dans ma vidéothèque"><span class="own-video-count" id="ownVideoCount"></span></div>
 <div class="own-video-list" id="mediaLibrary"></div>
 <div class="media-heading"><div><div class="label">DÉCOUVRIR AUSSI</div><div class="media-caption">Rechercher sur les plateformes vidéo et musique</div></div></div>
 <div class="media-sources" role="group" aria-label="Choisir une plateforme média">
@@ -441,18 +442,32 @@ render()
 @media(max-width:380px){.own-video-row{grid-template-columns:40px minmax(0,1fr) 36px;gap:8px;padding:8px}.own-video-play{width:40px;height:40px}}
 </style>
 <script id="ai-core-owned-video-script">
-(()=>{const $=id=>document.getElementById(id),list=$("mediaLibrary"),status=$("mediaStatus"),playerWrap=$("mediaPlayerWrap"),player=$("mediaPlayer"),playingTitle=$("mediaPlayingTitle"),add=$("mediaImport");if(!list||!status||!player||!add)return;
+(()=>{const $=id=>document.getElementById(id),list=$("mediaLibrary"),status=$("mediaStatus"),playerWrap=$("mediaPlayerWrap"),player=$("mediaPlayer"),playingTitle=$("mediaPlayingTitle"),add=$("mediaImport"),search=$("ownVideoSearch"),count=$("ownVideoCount"),close=$("mediaClose");if(!list||!status||!player||!add)return;
 let videos=[];
 function showStatus(message){status.textContent=message}
 function sizeLabel(bytes){if(!Number.isFinite(Number(bytes))||Number(bytes)<=0)return "Vidéo";const n=Number(bytes);return n>=1073741824?(n/1073741824).toFixed(1)+" Go":n>=1048576?(n/1048576).toFixed(0)+" Mo":Math.ceil(n/1024)+" Ko"}
-function render(){list.replaceChildren();if(!videos.length){const empty=document.createElement("p");empty.className="own-video-empty";empty.textContent="Ta vidéothèque est vide. Appuie sur « Ajouter une vidéo » pour choisir une vidéo de ta tablette.";list.append(empty);return}
-videos.forEach(item=>{const row=document.createElement("article");row.className="own-video-row";const play=document.createElement("button");play.className="own-video-play";play.type="button";play.textContent="▶";play.setAttribute("aria-label","Lire "+item.title);play.addEventListener("click",()=>{player.src=item.uri;playingTitle.textContent=item.title;playerWrap.hidden=false;player.load();player.play().catch(()=>{});playerWrap.scrollIntoView({behavior:"smooth",block:"center"})});const details=document.createElement("div");details.style.minWidth="0";const title=document.createElement("div");title.className="own-video-title";title.textContent=item.title;const size=document.createElement("div");size.className="own-video-size";size.textContent=sizeLabel(item.bytes);details.append(title,size);const remove=document.createElement("button");remove.className="own-video-delete";remove.type="button";remove.textContent="×";remove.setAttribute("aria-label","Supprimer "+item.title);remove.addEventListener("click",()=>{if(confirm("Supprimer « "+item.title+" » de ta vidéothèque AI CORE ?"))AndroidMedia.deleteVideo(item.id)});row.append(play,details,remove);list.append(row)})}
+function render(){list.replaceChildren();const term=(search?.value||"").trim().toLocaleLowerCase("fr");const filtered=videos.filter(item=>String(item.title||"").toLocaleLowerCase("fr").includes(term));if(count)count.textContent=videos.length+" vidéo"+(videos.length===1?"":"s");if(!filtered.length){const empty=document.createElement("p");empty.className="own-video-empty";empty.textContent=videos.length?"Aucune vidéo ne correspond à ta recherche.":"Ta vidéothèque est vide. Appuie sur « Ajouter une vidéo » pour choisir une ou plusieurs vidéos de ta tablette.";list.append(empty);return}
+filtered.forEach(item=>{const row=document.createElement("article");row.className="own-video-row";const play=document.createElement("button");play.className="own-video-play";play.type="button";play.textContent="▶";play.setAttribute("aria-label","Lire "+item.title);play.addEventListener("click",()=>{player.src=item.uri;playingTitle.textContent=item.title;playerWrap.hidden=false;player.load();player.play().catch(()=>{});playerWrap.scrollIntoView({behavior:"smooth",block:"center"})});const details=document.createElement("div");details.style.minWidth="0";const title=document.createElement("div");title.className="own-video-title";title.textContent=item.title;const size=document.createElement("div");size.className="own-video-size";size.textContent=sizeLabel(item.bytes);details.append(title,size);const rename=document.createElement("button");rename.className="own-video-edit";rename.type="button";rename.textContent="✎";rename.setAttribute("aria-label","Renommer "+item.title);rename.addEventListener("click",()=>{const next=prompt("Nouveau nom de la vidéo :",item.title);if(next&&next.trim()&&next.trim()!==item.title)AndroidMedia.renameVideo(item.id,next.trim())});const remove=document.createElement("button");remove.className="own-video-delete";remove.type="button";remove.textContent="×";remove.setAttribute("aria-label","Supprimer "+item.title);remove.addEventListener("click",()=>{if(confirm("Supprimer « "+item.title+" » de ta vidéothèque AI CORE ?"))AndroidMedia.deleteVideo(item.id)});row.append(play,details,rename,remove);list.append(row)})}
 function refresh(){try{videos=JSON.parse(AndroidMedia.listVideos()||"[]");if(!Array.isArray(videos))videos=[];render()}catch{videos=[];render()}}
-add.addEventListener("click",()=>{if(window.AndroidMedia)AndroidMedia.chooseVideo();else showStatus("L’import vidéo est disponible dans l’application Android.")});
+add.addEventListener("click",()=>{if(window.AndroidMedia){showStatus("Choisis une ou plusieurs vidéos dans les fichiers de ta tablette.");AndroidMedia.chooseVideo()}else showStatus("L’import vidéo est disponible dans l’application Android.")});
+search?.addEventListener("input",render);
+close?.addEventListener("click",()=>{player.pause();player.removeAttribute("src");player.load();playerWrap.hidden=true});
+player.addEventListener("error",()=>showStatus("Cette vidéo ne peut pas être lue par cet appareil."));
 window.__aiCoreMediaStatus=showStatus;
 window.__aiCoreVideoImported=raw=>{try{videos=JSON.parse(raw||"[]");if(!Array.isArray(videos))videos=[];render()}catch{refresh()}};
 window.__aiCoreVideosChanged=refresh;
 if(window.AndroidMedia){refresh()}else render()
 })();
 </script>
+<style id="ai-core-video-library-upgrade">
+.own-video-tools{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;align-items:center;margin:8px 0 10px}
+.own-video-search{min-width:0;font-size:12px}
+.own-video-count{min-width:42px;color:#9cb3c7;text-align:right;font-size:10px;white-space:nowrap}
+.own-video-row{grid-template-columns:44px minmax(0,1fr) 36px 36px}
+.own-video-edit{width:34px;height:35px;border:1px solid #9affdd35;border-radius:11px;background:#15343b;color:#baffea;font-size:16px}
+.own-video-player-bar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.own-video-player-bar .own-video-playing{flex:1;min-width:0;padding:3px 0;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+.own-video-close{min-height:34px;padding:5px 9px}
+@media(max-width:380px){.own-video-row{grid-template-columns:40px minmax(0,1fr) 34px 34px}.own-video-edit{width:32px;height:33px}.own-video-tools{gap:6px}}
+</style>
 </body></html>
