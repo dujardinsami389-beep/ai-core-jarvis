@@ -68,6 +68,35 @@ body:before{content:"";position:fixed;z-index:-1;inset:0;pointer-events:none;opa
 @media(max-width:380px){.media-cover{min-height:155px;padding:17px 14px}.media-cover-art{width:86px;height:86px}.media-cover-art em{width:47px;height:47px;border-radius:17px}.hero{padding-left:8px;padding-right:8px}}
 @media(prefers-reduced-motion:reduce){.media-cover-art i,.media-cover-art b{animation:none}.section-nav a,.own-video-row{transition:none}}
 </style>
+<style id="ai-core-shorts-style">
+.own-shorts-launch{display:grid;grid-template-columns:44px minmax(0,1fr) 24px;gap:11px;align-items:center;width:100%;margin:10px 0 3px;padding:11px 13px;border:1px solid #8be0ff45;border-radius:16px;background:linear-gradient(110deg,#122f43,#101d2b);color:#eaf9ff;text-align:left;box-shadow:inset 0 1px #ffffff0d,0 8px 22px #0003;transition:transform .16s ease,border-color .16s ease}
+.own-shorts-launch:active{transform:scale(.985)}
+.shorts-launch-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:linear-gradient(145deg,#9fffe1,#62d9ff);color:#061522;font-size:15px;box-shadow:0 0 22px #53dfff45}
+.own-shorts-launch strong,.own-shorts-launch small{display:block}
+.own-shorts-launch strong{font-size:12px;letter-spacing:.03em}
+.own-shorts-launch small{margin-top:4px;color:#9bb3c5;font-size:10px}
+.shorts-launch-arrow{color:#9fffe1;font-size:18px}
+.shorts-overlay{position:fixed;z-index:100;inset:0;display:flex;flex-direction:column;align-items:center;gap:8px;padding:calc(8px + env(safe-area-inset-top,0px)) 12px calc(6px + env(safe-area-inset-bottom,0px));background:radial-gradient(ellipse at 50% 42%,#15344a,#050a12 68%);color:#f2f8ff}
+.shorts-overlay[hidden]{display:none}
+.shorts-topbar{display:flex;align-items:center;gap:12px;width:min(100%,460px);min-height:42px}
+.shorts-wordmark{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:900;letter-spacing:.12em}
+.shorts-wordmark span{color:#d9eff9}.shorts-wordmark b{padding:4px 7px;border-radius:6px;background:linear-gradient(100deg,#8be0ff,#9fffe1);color:#061522;font-size:9px;letter-spacing:.15em}
+.shorts-index{margin-left:auto;color:#a8c0d2;font-size:10px;font-variant-numeric:tabular-nums}
+.shorts-close{width:36px;height:36px;border:1px solid #c3efff36;border-radius:12px;background:#102338;color:#e8faff;font-size:23px;line-height:1}
+.shorts-stage{position:relative;flex:1;min-height:0;width:min(100%,460px);overflow:hidden;border:1px solid #80ddff45;border-radius:24px;background:#02050a;box-shadow:0 18px 55px #0008,0 0 40px #45caff1c;touch-action:pan-x}
+.shorts-stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#02050a}
+.shorts-shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,#0006,transparent 21%,transparent 50%,#0003 68%,#000d 100%)}
+.shorts-info{position:absolute;right:14px;bottom:17px;left:15px;display:grid;grid-template-columns:minmax(0,1fr) 45px;gap:9px;align-items:end}
+.shorts-tag{grid-column:1;color:#b8e7f7;font-size:9px;font-weight:850;letter-spacing:.17em;text-shadow:0 2px 8px #000}
+.shorts-info strong{grid-column:1;overflow-wrap:anywhere;color:white;font-size:15px;line-height:1.3;text-shadow:0 2px 10px #000}
+.shorts-like{grid-column:2;grid-row:1/3;align-self:center;width:44px;height:44px;border:1px solid #ffffff68;border-radius:15px;background:#071421a8;color:white;font-size:26px;backdrop-filter:blur(8px)}
+.shorts-like[aria-pressed="true"]{border-color:#ff98bd;background:#3b1328d9;color:#ff80b5}
+.shorts-controls{position:absolute;top:50%;right:11px;display:grid;gap:9px;transform:translateY(-50%)}
+.shorts-controls button{display:grid;place-items:center;width:38px;height:38px;border:1px solid #ffffff60;border-radius:50%;background:#061422a8;color:#f3fcff;font-size:19px;backdrop-filter:blur(8px)}
+.shorts-hint{width:min(100%,460px);padding:3px 0;color:#8ea5b8;text-align:center;font-size:9px;letter-spacing:.08em}
+@media(max-height:560px){.shorts-overlay{gap:4px;padding-top:4px}.shorts-topbar{min-height:34px}.shorts-close{width:30px;height:30px}.shorts-hint{font-size:8px}}
+@media(prefers-reduced-motion:reduce){.own-shorts-launch{transition:none}}
+</style>
 </head>
 <body><main class="shell">
 <header class="top"><div class="brand-lockup"><svg class="brand-mark" viewBox="0 0 48 48" role="img" aria-label="Logo AI CORE"><defs><linearGradient id="brandGlow" x1="7" y1="4" x2="41" y2="44" gradientUnits="userSpaceOnUse"><stop stop-color="#8deaff"/><stop offset="1" stop-color="#75f5ce"/></linearGradient></defs><path d="M24 3.5 41 10v12.2c0 10.2-6.8 18.1-17 22.3C13.8 40.3 7 32.4 7 22.2V10l17-6.5Z" fill="#10283b" stroke="url(#brandGlow)" stroke-width="2"/><path d="M24 13v22M15 24h18M17.5 17.5l13 13M30.5 17.5l-13 13" stroke="url(#brandGlow)" stroke-width="2" stroke-linecap="round" opacity=".8"/><circle cx="24" cy="24" r="5" fill="#d8fbff"/><circle cx="24" cy="24" r="2.2" fill="#44c8fa"/></svg><div class="brand-copy"><div class="brand">AI CORE</div><div class="sub">J A R V I S&nbsp; / &nbsp;M O B I L E</div></div></div><div class="online"><i></i>PRÊT</div></header>
@@ -108,6 +137,17 @@ body:before{content:"";position:fixed;z-index:-1;inset:0;pointer-events:none;opa
 <div class="own-video-player" id="mediaPlayerWrap" hidden><div class="own-video-player-bar"><div class="own-video-playing" id="mediaPlayingTitle"></div><button class="ghost own-video-close" id="mediaClose" type="button">Fermer</button></div><video id="mediaPlayer" controls playsinline preload="metadata"></video></div>
 <div class="own-video-tools"><input class="field own-video-search" id="ownVideoSearch" type="search" placeholder="Rechercher dans mes vidéos…" aria-label="Rechercher dans ma vidéothèque"><span class="own-video-count" id="ownVideoCount"></span></div>
 <div class="own-video-list" id="mediaLibrary"></div>
+<button class="own-shorts-launch" id="ownShortsLaunch" type="button"><span class="shorts-launch-icon">▶</span><span><strong>Mode Shorts</strong><small>Fais défiler tes vidéos en plein écran</small></span><span class="shorts-launch-arrow">↗</span></button>
+<div class="shorts-overlay" id="shortsOverlay" hidden role="dialog" aria-modal="true" aria-label="Mode Shorts AI CORE">
+<div class="shorts-topbar"><div class="shorts-wordmark"><span>AI CORE</span><b>SHORTS</b></div><span class="shorts-index" id="shortsIndex">0 / 0</span><button class="shorts-close" id="shortsClose" type="button" aria-label="Fermer le mode Shorts">×</button></div>
+<div class="shorts-stage" id="shortsStage">
+<video id="shortsVideo" playsinline preload="metadata"></video>
+<div class="shorts-shade"></div>
+<div class="shorts-info"><span class="shorts-tag">MA VIDÉOTHÈQUE</span><strong id="shortsTitle"></strong><button class="shorts-like" id="shortsLike" type="button" aria-label="Ajouter aux favoris" aria-pressed="false">♡</button></div>
+<div class="shorts-controls"><button id="shortsUp" type="button" aria-label="Vidéo précédente">⌃</button><button id="shortsPlay" type="button" aria-label="Mettre en pause">Ⅱ</button><button id="shortsDown" type="button" aria-label="Vidéo suivante">⌄</button></div>
+</div>
+<div class="shorts-hint">Glisse vers le haut pour la vidéo suivante</div>
+</div>
 <div class="media-heading"><div><div class="label">DÉCOUVRIR AUSSI</div><div class="media-caption">Rechercher sur les plateformes vidéo et musique</div></div></div>
 <div class="media-sources" role="group" aria-label="Choisir une plateforme média">
 <button class="media-source active" data-media-source="youtube" aria-pressed="true">YouTube</button><button class="media-source" data-media-source="music" aria-pressed="false">YouTube Music</button><button class="media-source" data-media-source="spotify" aria-pressed="false">Spotify</button>
@@ -508,21 +548,26 @@ render()
 @media(max-width:380px){.own-video-row{grid-template-columns:40px minmax(0,1fr) 36px;gap:8px;padding:8px}.own-video-play{width:40px;height:40px}}
 </style>
 <script id="ai-core-owned-video-script">
-(()=>{const $=id=>document.getElementById(id),list=$("mediaLibrary"),status=$("mediaStatus"),playerWrap=$("mediaPlayerWrap"),player=$("mediaPlayer"),playingTitle=$("mediaPlayingTitle"),add=$("mediaImport"),search=$("ownVideoSearch"),count=$("ownVideoCount"),close=$("mediaClose");if(!list||!status||!player||!add)return;
-let videos=[];
+(()=>{const $=id=>document.getElementById(id),list=$("mediaLibrary"),status=$("mediaStatus"),playerWrap=$("mediaPlayerWrap"),player=$("mediaPlayer"),playingTitle=$("mediaPlayingTitle"),add=$("mediaImport"),search=$("ownVideoSearch"),count=$("ownVideoCount"),close=$("mediaClose"),shortsLaunch=$("ownShortsLaunch"),shortsOverlay=$("shortsOverlay"),shortsStage=$("shortsStage"),shortsVideo=$("shortsVideo"),shortsTitle=$("shortsTitle"),shortsIndex=$("shortsIndex"),shortsLike=$("shortsLike"),shortsPlay=$("shortsPlay");if(!list||!status||!player||!add)return;
+let videos=[],shortsItems=[],shortsAt=0,touchStartY=null,likes=[];try{likes=JSON.parse(localStorage.getItem("ai-core-shorts-likes-v1")||"[]");if(!Array.isArray(likes))likes=[]}catch{likes=[]}
 function showStatus(message){status.textContent=message}
 function sizeLabel(bytes){if(!Number.isFinite(Number(bytes))||Number(bytes)<=0)return "Vidéo";const n=Number(bytes);return n>=1073741824?(n/1073741824).toFixed(1)+" Go":n>=1048576?(n/1048576).toFixed(0)+" Mo":Math.ceil(n/1024)+" Ko"}
-function render(){list.replaceChildren();const term=(search?.value||"").trim().toLocaleLowerCase("fr");const filtered=videos.filter(item=>String(item.title||"").toLocaleLowerCase("fr").includes(term));if(count)count.textContent=videos.length+" vidéo"+(videos.length===1?"":"s");if(!filtered.length){const empty=document.createElement("p");empty.className="own-video-empty";empty.textContent=videos.length?"Aucune vidéo ne correspond à ta recherche.":"Ta vidéothèque est vide. Appuie sur « Ajouter une vidéo » pour choisir une ou plusieurs vidéos de ta tablette.";list.append(empty);return}
+function render(){list.replaceChildren();const term=(search?.value||"").trim().toLocaleLowerCase("fr"),filtered=videos.filter(item=>String(item.title||"").toLocaleLowerCase("fr").includes(term));if(count)count.textContent=videos.length+" vidéo"+(videos.length===1?"":"s");if(!filtered.length){const empty=document.createElement("p");empty.className="own-video-empty";empty.textContent=videos.length?"Aucune vidéo ne correspond à ta recherche.":"Ta vidéothèque est vide. Appuie sur « Ajouter une vidéo » pour choisir une ou plusieurs vidéos de ta tablette.";list.append(empty);return}
 filtered.forEach(item=>{const row=document.createElement("article");row.className="own-video-row";const play=document.createElement("button");play.className="own-video-play";play.type="button";play.textContent="▶";play.setAttribute("aria-label","Lire "+item.title);play.addEventListener("click",()=>{player.src=item.uri;playingTitle.textContent=item.title;playerWrap.hidden=false;player.load();player.play().catch(()=>{});playerWrap.scrollIntoView({behavior:"smooth",block:"center"})});const details=document.createElement("div");details.style.minWidth="0";const title=document.createElement("div");title.className="own-video-title";title.textContent=item.title;const size=document.createElement("div");size.className="own-video-size";size.textContent=sizeLabel(item.bytes);details.append(title,size);const rename=document.createElement("button");rename.className="own-video-edit";rename.type="button";rename.textContent="✎";rename.setAttribute("aria-label","Renommer "+item.title);rename.addEventListener("click",()=>{const next=prompt("Nouveau nom de la vidéo :",item.title);if(next&&next.trim()&&next.trim()!==item.title)AndroidMedia.renameVideo(item.id,next.trim())});const remove=document.createElement("button");remove.className="own-video-delete";remove.type="button";remove.textContent="×";remove.setAttribute("aria-label","Supprimer "+item.title);remove.addEventListener("click",()=>{if(confirm("Supprimer « "+item.title+" » de ta vidéothèque AI CORE ?"))AndroidMedia.deleteVideo(item.id)});row.append(play,details,rename,remove);list.append(row)})}
 function refresh(){try{videos=JSON.parse(AndroidMedia.listVideos()||"[]");if(!Array.isArray(videos))videos=[];render()}catch{videos=[];render()}}
+function isLiked(item){return likes.includes(item.id)}
+function renderLike(){const item=shortsItems[shortsAt];if(!item||!shortsLike)return;const liked=isLiked(item);shortsLike.setAttribute("aria-pressed",String(liked));shortsLike.textContent=liked?"♥":"♡";shortsLike.setAttribute("aria-label",liked?"Retirer des favoris":"Ajouter aux favoris")}
+function showShort(index){if(!shortsItems.length)return;shortsAt=(index+shortsItems.length)%shortsItems.length;const item=shortsItems[shortsAt];shortsVideo.pause();shortsVideo.src=item.uri;shortsVideo.load();shortsTitle.textContent=item.title;shortsIndex.textContent=(shortsAt+1)+" / "+shortsItems.length;shortsPlay.textContent="Ⅱ";shortsPlay.setAttribute("aria-label","Mettre en pause");renderLike();shortsVideo.play().catch(()=>{shortsPlay.textContent="▶";shortsPlay.setAttribute("aria-label","Lire la vidéo")})}
+function openShorts(){if(!videos.length){showStatus("Ajoute d’abord une vidéo pour lancer le mode Shorts.");return}shortsItems=videos.slice();shortsOverlay.hidden=false;document.body.style.overflow="hidden";showShort(0)}
+function closeShorts(){shortsVideo.pause();shortsVideo.removeAttribute("src");shortsVideo.load();shortsOverlay.hidden=true;document.body.style.overflow=""}
+function toggleShortPlay(){if(shortsVideo.paused){shortsVideo.play().then(()=>{shortsPlay.textContent="Ⅱ";shortsPlay.setAttribute("aria-label","Mettre en pause")}).catch(()=>{})}else{shortsVideo.pause();shortsPlay.textContent="▶";shortsPlay.setAttribute("aria-label","Lire la vidéo")}}
 add.addEventListener("click",()=>{if(window.AndroidMedia){showStatus("Choisis une ou plusieurs vidéos dans les fichiers de ta tablette.");AndroidMedia.chooseVideo()}else showStatus("L’import vidéo est disponible dans l’application Android.")});
-search?.addEventListener("input",render);
-close?.addEventListener("click",()=>{player.pause();player.removeAttribute("src");player.load();playerWrap.hidden=true});
-player.addEventListener("error",()=>showStatus("Cette vidéo ne peut pas être lue par cet appareil."));
-window.__aiCoreMediaStatus=showStatus;
-window.__aiCoreVideoImported=raw=>{try{videos=JSON.parse(raw||"[]");if(!Array.isArray(videos))videos=[];render()}catch{refresh()}};
-window.__aiCoreVideosChanged=refresh;
-if(window.AndroidMedia){refresh()}else render()
+search?.addEventListener("input",render);close?.addEventListener("click",()=>{player.pause();player.removeAttribute("src");player.load();playerWrap.hidden=true});player.addEventListener("error",()=>showStatus("Cette vidéo ne peut pas être lue par cet appareil."));
+shortsLaunch?.addEventListener("click",openShorts);$("shortsClose")?.addEventListener("click",closeShorts);$("shortsDown")?.addEventListener("click",()=>showShort(shortsAt+1));$("shortsUp")?.addEventListener("click",()=>showShort(shortsAt-1));shortsPlay?.addEventListener("click",toggleShortPlay);shortsVideo?.addEventListener("click",toggleShortPlay);shortsVideo?.addEventListener("ended",()=>showShort(shortsAt+1));shortsVideo?.addEventListener("error",()=>{shortsPlay.textContent="▶";shortsPlay.setAttribute("aria-label","Lire la vidéo")});
+shortsLike?.addEventListener("click",()=>{const item=shortsItems[shortsAt];if(!item)return;if(isLiked(item))likes=likes.filter(id=>id!==item.id);else likes.push(item.id);try{localStorage.setItem("ai-core-shorts-likes-v1",JSON.stringify(likes))}catch{}renderLike()});
+shortsStage?.addEventListener("touchstart",event=>{touchStartY=event.changedTouches[0]?.clientY??null},{passive:true});shortsStage?.addEventListener("touchend",event=>{if(touchStartY===null)return;const delta=touchStartY-(event.changedTouches[0]?.clientY??touchStartY);if(Math.abs(delta)>48)showShort(shortsAt+(delta>0?1:-1));touchStartY=null},{passive:true});shortsStage?.addEventListener("wheel",event=>{if(Math.abs(event.deltaY)>20)showShort(shortsAt+(event.deltaY>0?1:-1))},{passive:true});
+document.addEventListener("keydown",event=>{if(shortsOverlay?.hidden)return;if(event.key==="Escape"){closeShorts();event.preventDefault()}if(event.key==="ArrowDown"){showShort(shortsAt+1);event.preventDefault()}if(event.key==="ArrowUp"){showShort(shortsAt-1);event.preventDefault()}if(event.key===" "){toggleShortPlay();event.preventDefault()}});
+window.__aiCoreMediaStatus=showStatus;window.__aiCoreVideoImported=raw=>{try{videos=JSON.parse(raw||"[]");if(!Array.isArray(videos))videos=[];render()}catch{refresh()}};window.__aiCoreVideosChanged=refresh;if(window.AndroidMedia){refresh()}else render()
 })();
 </script>
 <style id="ai-core-video-library-upgrade">
