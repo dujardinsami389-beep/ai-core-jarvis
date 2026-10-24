@@ -145,6 +145,7 @@ class MainActivity : Activity() {
                     addCategory(Intent.CATEGORY_OPENABLE)
                     type = "video/*"
                     putExtra(Intent.EXTRA_TITLE, "Choisir une vidéo pour AI CORE")
+                    putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
                 }
                 startActivityForResult(intent, mediaRequest)
             }
@@ -152,9 +153,21 @@ class MainActivity : Activity() {
 
         @JavascriptInterface fun listVideos(): String = videoLibraryJson().toString()
 
+        @JavascriptInterface fun renameVideo(id: String, newTitle: String) {
+            val safeId = runCatching { java.util.UUID.fromString(id).toString() }.getOrNull() ?: return
+            val title = newTitle.filterNot { it.isISOControl() }.trim().take(100)
+            if (title.isBlank()) return
+            worker.execute {
+                val exists = File(filesDir, "ai-core-videos").listFiles()?.any { it.isFile && it.nameWithoutExtension == safeId } == true
+                if (exists) getSharedPreferences("ai-core-videos", MODE_PRIVATE).edit().putString(safeId, title).apply()
+                sendToPage("window.__aiCoreVideosChanged && window.__aiCoreVideosChanged();")
+                if (!exists) mediaStatus("Impossible de renommer cette vidéo.")
+            }
+        }
+
         @JavascriptInterface fun deleteVideo(id: String) {
             worker.execute {
-                val safeId = id.take(80)
+                val safeId = runCatching { java.util.UUID.fromString(id).toString() }.getOrNull() ?: return@execute
                 val dir = File(filesDir, "ai-core-videos")
                 val target = dir.listFiles()?.firstOrNull { it.isFile && it.nameWithoutExtension == safeId }
                 val removed = target?.delete() == true
@@ -311,7 +324,12 @@ class MainActivity : Activity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == modelRequest && resultCode == RESULT_OK) data?.data?.let(::importModel)
-        if (requestCode == mediaRequest && resultCode == RESULT_OK) data?.data?.let(::importVideo)
+        if (requestCode == mediaRequest && resultCode == RESULT_OK) {
+            val selected = mutableListOf<Uri>()
+            data?.clipData?.let { clip -> for (index in 0 until clip.itemCount) selected.add(clip.getItemAt(index).uri) }
+            if (selected.isEmpty()) data?.data?.let(selected::add)
+            selected.forEach(::importVideo)
+        }
         if (requestCode != speechRequest) return
         if (resultCode == RESULT_OK) {
             val phrase = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.firstOrNull().orEmpty()
