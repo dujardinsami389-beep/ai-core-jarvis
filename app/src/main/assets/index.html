@@ -782,4 +782,11 @@ body{
 </script>
 
 <section class="card" style="max-width:490px;margin:20px auto;padding:18px"><h2 style="font-size:17px;color:#9fffe1">🎙️ ÉCOUTE JARVIS</h2><p class="offline-copy">Active le microphone pour détecter « Jarvis » lorsque l'application est en arrière-plan. Android affiche une notification permanente. Selon l'appareil, l'écoute peut s'interrompre.</p><div class="row"><button class="ghost" id="wake-start">◉ Écoute permanente</button><button class="ghost" id="wake-stop">Arrêter</button></div><p id="wake-status" class="fine" role="status">◯ JARVIS · Écoute désactivée</p></section><script>(function(){const s=document.getElementById('wake-status');window.__aiCoreWakeStatus=t=>s.textContent=t;document.getElementById('wake-start').onclick=()=>{if(window.AndroidWake){AndroidWake.start();s.textContent='◉ JARVIS · Activation demandée. Vérifie la notification Android.'}else s.textContent='Disponible dans l’application Android uniquement.'};document.getElementById('wake-stop').onclick=()=>{if(window.AndroidWake)AndroidWake.stop();s.textContent='Écoute arrêtée.'}})();</script>
+<style id="jarvis-floating-listener">
+#jarvis-listener-badge{position:fixed;right:15px;bottom:85px;z-index:9999;display:none;align-items:center;gap:8px;padding:8px 13px;border:1px solid #6be6ff;border-radius:40px;background:#061525ee;color:#b7f5ff;box-shadow:0 0 22px #35cfff65;font-size:12px;font-weight:800;cursor:pointer}
+#jarvis-listener-badge.active{display:flex}
+#jarvis-listener-badge .pulse{height:13px;width:13px;border-radius:50%;background:#69eaff;box-shadow:0 0 0 4px #69eaff22,0 0 15px #69eaff;animation:jarvisListenPulse 1.6s infinite}
+@keyframes jarvisListenPulse{50%{box-shadow:0 0 0 9px #69eaff12,0 0 23px #69eaff}}
+</style><button id="jarvis-listener-badge" aria-label="JARVIS écoute. Toucher pour arrêter." type="button"><span class="pulse"></span> JARVIS · ÉCOUTE</button>
+<script>(function(){const badge=document.getElementById('jarvis-listener-badge');const on=document.getElementById('wake-start');const off=document.getElementById('wake-stop');if(on)on.addEventListener('click',()=>badge.classList.add('active'));if(off)off.addEventListener('click',()=>badge.classList.remove('active'));badge.addEventListener('click',()=>{if(off)off.click()});})();</script>
 </body></html>
