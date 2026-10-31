@@ -7,3 +7,7 @@
 - Garder l'envoi des messages sous contrôle explicite de l'utilisateur.
 
 L'application ne doit jamais embarquer de secrets ou de clés API.
+
+## Compilation
+
+Le workflow Android est lancé automatiquement à chaque modification de la branche main. Vérifier son résultat dans Actions > Build AI CORE APK et récupérer l'artifact si le build réussit.
