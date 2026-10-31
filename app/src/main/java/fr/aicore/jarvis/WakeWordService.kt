@@ -6,7 +6,6 @@ import android.content.*
 import android.content.pm.PackageManager
 import android.os.*
 import android.speech.*
-import androidx.annotation.RequiresApi
 
 /** User-initiated foreground listening. Android speech providers may stop or require network. */
 class WakeWordService : Service(), RecognitionListener {
