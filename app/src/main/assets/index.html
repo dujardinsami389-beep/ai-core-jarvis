@@ -738,4 +738,47 @@ body{
 }
 </style>
 
+
+<section id="email-pro" class="card" style="max-width:490px;margin:20px auto;padding:20px" aria-label="E-mails professionnels">
+  <div class="row"><h2 style="font-size:17px;margin:0;color:#9fffe1">✉ AI CORE · E-MAIL PRO</h2><span class="label">VERSION 2.2</span></div>
+  <p class="offline-copy">Rédige un message professionnel, puis vérifie-le et envoie-le depuis ton application e-mail. Aucun envoi automatique.</p>
+  <label for="pro-email-to" class="label">DESTINATAIRE</label>
+  <input class="field" id="pro-email-to" type="email" autocomplete="email" placeholder="contact@exemple.fr">
+  <label for="pro-email-subject" class="label" style="display:block;margin-top:12px">OBJET</label>
+  <input class="field" id="pro-email-subject" maxlength="500" placeholder="Objet du message">
+  <label for="pro-email-body" class="label" style="display:block;margin-top:12px">MESSAGE</label>
+  <textarea class="field" id="pro-email-body" rows="7" maxlength="50000" placeholder="Bonjour,&#10;&#10;...&#10;&#10;Cordialement,"></textarea>
+  <div class="quicktexts">
+    <button type="button" class="suggest" id="pro-email-template">Modèle professionnel</button>
+    <button type="button" class="suggest" id="pro-email-clear">Effacer</button>
+  </div>
+  <button type="button" class="send" id="pro-email-open">Ouvrir dans ma messagerie ↗</button>
+  <p id="pro-email-status" class="fine" role="status">Le message reste un brouillon jusqu'à ton envoi.</p>
+</section>
+<script>
+(function(){
+  const get=id=>document.getElementById(id);
+  const status=get('pro-email-status');
+  window.__aiCoreEmailStatus=message=>{status.textContent=message};
+  get('pro-email-template').addEventListener('click',()=>{
+    get('pro-email-body').value='Bonjour,\n\nJe me permets de vous contacter concernant ...\n\nJe vous remercie par avance pour votre retour.\n\nCordialement,';
+  });
+  get('pro-email-clear').addEventListener('click',()=>{
+    ['pro-email-to','pro-email-subject','pro-email-body'].forEach(id=>get(id).value='');
+    status.textContent='Champs effacés.';
+  });
+  get('pro-email-open').addEventListener('click',()=>{
+    const to=get('pro-email-to').value.trim(), subject=get('pro-email-subject').value.trim(), body=get('pro-email-body').value.trim();
+    if(!to || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)){status.textContent='Saisis une adresse e-mail valide.';return}
+    if(!subject || !body){status.textContent='Ajoute un objet et un message.';return}
+    status.textContent='Ouverture de ton application de messagerie…';
+    if(window.AndroidEmail && typeof window.AndroidEmail.compose==='function'){
+      window.AndroidEmail.compose(to,subject,body);
+    }else{
+      location.href='mailto:'+encodeURIComponent(to)+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+    }
+  });
+})();
+</script>
+
 </body></html>
