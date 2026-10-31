@@ -781,4 +781,5 @@ body{
 })();
 </script>
 
+<section class="card" style="max-width:490px;margin:20px auto;padding:18px"><h2 style="font-size:17px;color:#9fffe1">🎙️ ÉCOUTE JARVIS</h2><p class="offline-copy">Active le microphone pour détecter « Jarvis » lorsque l'application est en arrière-plan. Android affiche une notification permanente. Selon l'appareil, l'écoute peut s'interrompre.</p><div class="row"><button class="ghost" id="wake-start">Activer l'écoute</button><button class="ghost" id="wake-stop">Arrêter</button></div><p id="wake-status" class="fine" role="status">Écoute désactivée</p></section><script>(function(){const s=document.getElementById('wake-status');window.__aiCoreWakeStatus=t=>s.textContent=t;document.getElementById('wake-start').onclick=()=>{if(window.AndroidWake){AndroidWake.start();s.textContent='Activation demandée. Vérifie la notification Android.'}else s.textContent='Disponible dans l’application Android uniquement.'};document.getElementById('wake-stop').onclick=()=>{if(window.AndroidWake)AndroidWake.stop();s.textContent='Écoute arrêtée.'}})();</script>
 </body></html>
