@@ -62,7 +62,7 @@ class WakeWordService : Service(), RecognitionListener {
             }
             val pending = PendingIntent.getActivity(this, 3, i, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
             val notification = Notification.Builder(this, channel).setSmallIcon(android.R.drawable.ic_btn_speak_now)
-                .setContentTitle("Jarvis a entendu son nom").setContentText("Touchez pour ouvrir votre assistant")
+                .setContentTitle("◉ JARVIS ACTIVÉ").setContentText("Mot-clé détecté · Touchez pour ouvrir AI CORE")
                 .setContentIntent(pending).setAutoCancel(true).build()
             getSystemService(NotificationManager::class.java).notify(102, notification)
         }
