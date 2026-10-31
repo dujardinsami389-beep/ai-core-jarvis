@@ -48,6 +48,7 @@ class MainActivity : Activity() {
         web.addJavascriptInterface(SpeechBridge(), "AndroidSpeech")
         web.addJavascriptInterface(AICoreBridge(), "AndroidAI")
         web.addJavascriptInterface(MediaBridge(), "AndroidMedia")
+        web.addJavascriptInterface(EmailBridge(), "AndroidEmail")
         web.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
                 val uri = request.url
@@ -227,6 +228,27 @@ class MainActivity : Activity() {
             } catch (e: Exception) {
                 temp.delete()
                 mediaStatus("Import impossible : ${e.message ?: "réessaie avec une autre vidéo"}")
+            }
+        }
+    }
+
+    private inner class EmailBridge {
+        @JavascriptInterface fun compose(recipient: String, subject: String, body: String) {
+            val address = recipient.trim().take(320)
+            val title = subject.take(500)
+            val message = body.take(50000)
+            runOnUiThread {
+                try {
+                    val intent = Intent(Intent.ACTION_SENDTO).apply {
+                        data = Uri.parse("mailto:")
+                        putExtra(Intent.EXTRA_EMAIL, arrayOf(address))
+                        putExtra(Intent.EXTRA_SUBJECT, title)
+                        putExtra(Intent.EXTRA_TEXT, message)
+                    }
+                    startActivity(Intent.createChooser(intent, "Envoyer avec une application e-mail"))
+                } catch (_: Exception) {
+                    sendToPage("window.__aiCoreEmailStatus && window.__aiCoreEmailStatus('Aucune application de messagerie compatible installée.')")
+                }
             }
         }
     }
