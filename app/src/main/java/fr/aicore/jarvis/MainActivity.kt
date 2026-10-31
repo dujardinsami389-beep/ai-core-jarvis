@@ -46,6 +46,7 @@ class MainActivity : Activity() {
         web.settings.allowFileAccess = true
         web.settings.allowContentAccess = false
         web.addJavascriptInterface(SpeechBridge(), "AndroidSpeech")
+        web.addJavascriptInterface(WakeBridge(), "AndroidWake")
         web.addJavascriptInterface(AICoreBridge(), "AndroidAI")
         web.addJavascriptInterface(MediaBridge(), "AndroidMedia")
         web.addJavascriptInterface(EmailBridge(), "AndroidEmail")
@@ -253,6 +254,18 @@ class MainActivity : Activity() {
         }
     }
 
+    private inner class WakeBridge {
+        @JavascriptInterface fun start() {
+            runOnUiThread {
+                if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+                    startForegroundService(Intent(this@MainActivity, WakeWordService::class.java))
+                } else requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), 142)
+            }
+        }
+        @JavascriptInterface fun stop() {
+            runOnUiThread { stopService(Intent(this@MainActivity, WakeWordService::class.java)) }
+        }
+    }
     private inner class SpeechBridge {
         @JavascriptInterface fun start() {
             runOnUiThread {
@@ -336,6 +349,9 @@ class MainActivity : Activity() {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 142 && grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) {
+            startForegroundService(Intent(this, WakeWordService::class.java))
+        }
         if (requestCode == permissionRequest) {
             if (grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) startSpeechRecognition()
             else sendSpeechError("not-allowed")
